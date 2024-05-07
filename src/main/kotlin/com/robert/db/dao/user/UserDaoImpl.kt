@@ -32,7 +32,7 @@ class UserDaoImpl: UserDao {
     }
 
 
-    override suspend fun findByEmail(email: String): User? = dbQuery {
+    override suspend fun findUserByEmail(email: String): User? = dbQuery {
         UserTable
             .select{ UserTable.email eq email }
             .map(::resultRowToNode)

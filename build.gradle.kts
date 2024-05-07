@@ -44,6 +44,7 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresql_driver_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
     implementation("org.ehcache:ehcache:$ehcache_version")
+    implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
 
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")

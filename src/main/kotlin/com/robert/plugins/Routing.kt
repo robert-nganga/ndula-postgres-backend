@@ -1,6 +1,8 @@
 package com.robert.plugins
 
 import com.robert.db.dao.user.UserDao
+import com.robert.repositories.UserRepository
+import com.robert.repositories.UserRepositoryImpl
 import com.robert.routes.authCheck
 import com.robert.routes.login
 import com.robert.routes.signUp
@@ -14,10 +16,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting(
-    userRepo: UserDao,
     hashingService: HashingService,
-    tokenConfig: TokenConfig,
-    tokenService: TokenService
+    userRepository: UserRepository
 ) {
     routing {
         get("/") {
@@ -26,18 +26,14 @@ fun Application.configureRouting(
         authenticate {
             authCheck()
         }
-
-        login(
-            userRepo = userRepo,
-            hashingService = hashingService,
-            tokenService = tokenService,
-            tokenConfig = tokenConfig,
-        )
-        signUp(
-            userRepo = userRepo,
-            hashingService = hashingService,
-            tokenService = tokenService,
-            tokenConfig = tokenConfig,
-        )
+        route("/auth") {
+            login(
+                userRepository = userRepository,
+            )
+            signUp(
+                hashingService = hashingService,
+                userRepository = userRepository
+            )
+        }
     }
 }
