@@ -94,7 +94,8 @@ fun Route.signUp(
             salt = saltedHash.salt,
             name = request.name,
             image = request.image,
-            id = 0
+            id = 0,
+            createdAt = System.currentTimeMillis(),
         )
         val createdUser = userRepo.createUser(new)
         if (createdUser == null){

@@ -9,5 +9,6 @@ object UserTable: Table() {
     val image = varchar("image", 1024)
     val password  = varchar("password", 256)
     val salt = varchar("salt", 256)
+    val created = long("created")
     override val primaryKey = PrimaryKey(id)
 }

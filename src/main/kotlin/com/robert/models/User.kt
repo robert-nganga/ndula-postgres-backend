@@ -9,6 +9,7 @@ data class User(
     val name: String,
     val email: String,
     val image: String,
+    val createdAt: Long,
     val password: String,
     val salt: String
 )
