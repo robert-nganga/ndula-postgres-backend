@@ -1,0 +1,11 @@
+ktor:
+    application:
+        modules:
+            - com.robert.ApplicationKt.module
+    deployment:
+        port: 8080
+jwt:
+  issuer: "http://0.0.0.0:8080"
+  domain: "https://jwt-provider-domain/"
+  audience: "jwt-audience"
+  realm: "ktor sample app"
