@@ -10,7 +10,8 @@ data class UserResponse(
     val name: String,
     val email: String,
     val image: String,
-    val token: String
+    val token: String,
+    val created: Long
 )
 
 
@@ -20,5 +21,6 @@ fun User.toUserResponse(token: String) = UserResponse(
     name = name,
     email = email,
     token = token,
-    image = image
+    image = image,
+    created = createdAt
 )

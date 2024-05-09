@@ -1,17 +1,12 @@
 package com.robert.routes
 
-import com.robert.db.dao.user.UserDao
 import com.robert.models.User
 import com.robert.repositories.UserRepository
 import com.robert.request.AuthRequest
 import com.robert.request.UserRequest
 import com.robert.response.ErrorResponse
-import com.robert.response.toUserResponse
 import com.robert.security.hashing.HashingService
-import com.robert.security.hashing.SaltedHash
-import com.robert.security.tokens.TokenClaim
-import com.robert.security.tokens.TokenConfig
-import com.robert.security.tokens.TokenService
+import com.robert.utils.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -29,9 +24,11 @@ fun Route.login(
             )
             return@post
         }
-
         val result = userRepository.loginUser(request.email, request.password)
-        call.respond(result)
+        when(result){
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+        }
         return@post
     }
 }
@@ -59,7 +56,10 @@ fun Route.signUp(
             createdAt = System.currentTimeMillis(),
         )
         val result = userRepository.createUser(new)
-        call.respond(result)
+        when(result){
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+        }
         return@post
     }
 }

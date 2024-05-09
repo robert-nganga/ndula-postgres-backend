@@ -17,9 +17,6 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     DatabaseFactory.init()
-    install(ContentNegotiation){
-        jackson()
-    }
     val tokenConfig = TokenConfig(
         issuer = environment.config.property("jwt.issuer").getString(),
         audience = environment.config.property("jwt.audience").getString(),
@@ -36,17 +33,13 @@ fun Application.module() {
         tokenConfig = tokenConfig,
         hashingService = hashingService
     )
-    //configureSerialization()
-    //configureDatabases()
+    configureSerialization()
     configureMonitoring()
     configureSecurity(
         tokenConfig = tokenConfig,
     )
     configureRouting(
-        userRepo = UserDaoImpl(),
         hashingService = hashingService,
-        tokenConfig = tokenConfig,
-        tokenService = tokenService,
         userRepository = userRepository
     )
 }

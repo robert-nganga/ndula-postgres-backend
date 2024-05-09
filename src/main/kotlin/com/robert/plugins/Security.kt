@@ -3,6 +3,7 @@ package com.robert.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.robert.security.tokens.TokenConfig
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -20,9 +21,13 @@ fun Application.configureSecurity(tokenConfig: TokenConfig) {
                     .build()
             )
             validate { credential ->
-                if (credential.payload.audience.contains(tokenConfig.audience)) {
+                if (!credential.payload.getClaim("userId").asString().isNullOrEmpty()) {
                     JWTPrincipal(credential.payload)
                 } else null
+            }
+
+            challenge { _, _ ->
+                call.respond(HttpStatusCode.Unauthorized, mapOf("message" to "Token is not valid or has expired"))
             }
         }
     }

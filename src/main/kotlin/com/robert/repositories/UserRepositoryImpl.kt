@@ -2,6 +2,7 @@ package com.robert.repositories
 
 import com.robert.db.dao.user.UserDao
 import com.robert.models.User
+import com.robert.response.UserResponse
 import com.robert.response.toUserResponse
 import com.robert.security.hashing.HashingService
 import com.robert.security.hashing.SaltedHash
@@ -18,7 +19,7 @@ class UserRepositoryImpl(
     private val hashingService: HashingService,
 ): UserRepository {
 
-    override suspend fun createUser(user: User): BaseResponse<Any> {
+    override suspend fun createUser(user: User): BaseResponse<UserResponse> {
         return  if(doesUserExist(user.email)) {
             BaseResponse.ErrorResponse(message = "Email already registered", status = HttpStatusCode.Conflict)
         } else {
@@ -31,14 +32,14 @@ class UserRepositoryImpl(
                         value = createdUser.id.toString()
                     )
                 )
-                BaseResponse.SuccessResponse(data =  user.toUserResponse(token))
+                BaseResponse.SuccessResponse(data =  user.toUserResponse(token), status = HttpStatusCode.Created)
             } else {
-                BaseResponse.ErrorResponse(message = "Error creating user")
+                BaseResponse.ErrorResponse(message = "Error creating user", status = HttpStatusCode.InternalServerError)
             }
         }
     }
 
-    override suspend fun loginUser(email: String, password: String): BaseResponse<Any> {
+    override suspend fun loginUser(email: String, password: String): BaseResponse<UserResponse> {
         val user = userDao.findUserByEmail(email)
         return if (user != null) {
             val token = tokenService.generate(
