@@ -2,7 +2,7 @@ package com.robert.db.tables
 
 import org.jetbrains.exposed.sql.Table
 
-object UserTable: Table() {
+object UsersTable: Table() {
     val id = integer("id").autoIncrement()
     val name = varchar("name", 256)
     val email = varchar("email", 128).uniqueIndex()

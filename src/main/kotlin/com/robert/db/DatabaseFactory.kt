@@ -1,6 +1,6 @@
 package com.robert.db
 
-import com.robert.db.tables.UserTable
+import com.robert.db.tables.UsersTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +20,7 @@ object DatabaseFactory {
     fun init() {
         val database =  Database.connect(createHikariDataSource())
         transaction {
-            SchemaUtils.create(UserTable)
+            SchemaUtils.create(UsersTable)
         }
     }
 
