@@ -1,4 +1,4 @@
-package com.robert.repositories
+package com.robert.repositories.user
 
 import com.robert.models.User
 import com.robert.response.UserResponse

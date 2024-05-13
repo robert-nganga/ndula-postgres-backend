@@ -1,4 +1,4 @@
-package com.robert.repositories
+package com.robert.repositories.user
 
 import com.robert.db.dao.user.UserDao
 import com.robert.models.User

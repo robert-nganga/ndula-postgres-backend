@@ -1,14 +1,10 @@
 package com.robert.plugins
 
-import com.robert.db.dao.user.UserDao
-import com.robert.repositories.UserRepository
-import com.robert.repositories.UserRepositoryImpl
+import com.robert.repositories.user.UserRepository
 import com.robert.routes.authCheck
 import com.robert.routes.login
 import com.robert.routes.signUp
 import com.robert.security.hashing.HashingService
-import com.robert.security.tokens.TokenConfig
-import com.robert.security.tokens.TokenService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

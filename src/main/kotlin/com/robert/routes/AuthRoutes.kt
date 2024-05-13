@@ -1,7 +1,7 @@
 package com.robert.routes
 
 import com.robert.models.User
-import com.robert.repositories.UserRepository
+import com.robert.repositories.user.UserRepository
 import com.robert.request.AuthRequest
 import com.robert.request.UserRequest
 import com.robert.response.ErrorResponse

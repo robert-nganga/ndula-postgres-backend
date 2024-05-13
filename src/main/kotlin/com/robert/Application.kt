@@ -3,13 +3,11 @@ package com.robert
 import com.robert.db.DatabaseFactory
 import com.robert.db.dao.user.UserDaoImpl
 import com.robert.plugins.*
-import com.robert.repositories.UserRepositoryImpl
+import com.robert.repositories.user.UserRepositoryImpl
 import com.robert.security.hashing.SHA256HashingService
 import com.robert.security.tokens.JwtTokenService
 import com.robert.security.tokens.TokenConfig
-import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
