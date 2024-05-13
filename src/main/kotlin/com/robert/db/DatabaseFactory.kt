@@ -1,6 +1,6 @@
 package com.robert.db
 
-import com.robert.db.tables.UsersTable
+import com.robert.db.tables.user.UsersTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers

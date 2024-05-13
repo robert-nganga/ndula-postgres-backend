@@ -2,7 +2,7 @@ package com.robert.db.dao.user
 
 import com.robert.db.DatabaseFactory.dbQuery
 import com.robert.models.User
-import com.robert.db.tables.UsersTable
+import com.robert.db.tables.user.UsersTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select

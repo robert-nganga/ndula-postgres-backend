@@ -1,4 +1,4 @@
-package com.robert.db.tables
+package com.robert.db.tables.user
 
 import org.jetbrains.exposed.sql.Table
 
