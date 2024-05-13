@@ -1,5 +1,6 @@
 package com.robert.db.dao.shoe
 
+import com.robert.models.Brand
 import com.robert.models.Shoe
 
 interface ShoeDao {
