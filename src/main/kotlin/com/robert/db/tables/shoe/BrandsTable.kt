@@ -9,4 +9,8 @@ object BrandsTable : Table() {
     val logoUrl = varchar("logo_url", 1024).nullable()
 
     override val primaryKey = PrimaryKey(id)
+
+    init {
+        uniqueIndex(name)
+    }
 }

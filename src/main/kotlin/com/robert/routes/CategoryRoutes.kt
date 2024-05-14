@@ -2,8 +2,10 @@ package com.robert.routes
 
 import com.robert.db.dao.category.CategoryDao
 import com.robert.models.Category
+import com.robert.repositories.shoe.CategoryRepository
 import com.robert.request.CategoryRequest
 import com.robert.response.ErrorResponse
+import com.robert.utils.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -11,7 +13,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.categoryRoutes(
-    categoryDao: CategoryDao
+    categoryRepository: CategoryRepository
 ) {
     post("/add") {
         val request = call.receiveNullable<CategoryRequest>() ?: kotlin.run {
@@ -26,20 +28,18 @@ fun Route.categoryRoutes(
             name = request.name,
             description = request.description,
         )
-        val category = categoryDao.insertCategory(requestData)
-
-        if (category == null){
-            call.respond(
-                HttpStatusCode.InternalServerError,
-                ErrorResponse("Error while adding category", "", HttpStatusCode.InternalServerError.value)
-            )
-        } else {
-            call.respond(HttpStatusCode.Created, category)
+        val result = categoryRepository.insertCategory(requestData)
+        when(result) {
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }
     }
 
     get("/all") {
-        val categories = categoryDao.getAllCategories()
-        call.respond(HttpStatusCode.OK, categories)
+        val result = categoryRepository.getAllCategories()
+        when(result) {
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
     }
 }

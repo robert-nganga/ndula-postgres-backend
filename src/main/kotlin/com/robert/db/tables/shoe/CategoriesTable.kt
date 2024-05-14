@@ -8,6 +8,10 @@ object CategoriesTable : Table() {
     val description = text("description").nullable()
 
     override val primaryKey = PrimaryKey(id)
+
+    init {
+        uniqueIndex(name)
+    }
 }
 
 

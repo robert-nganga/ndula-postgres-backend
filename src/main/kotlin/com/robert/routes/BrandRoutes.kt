@@ -2,8 +2,10 @@ package com.robert.routes
 
 import com.robert.db.dao.brand.BrandDao
 import com.robert.models.Brand
+import com.robert.repositories.shoe.BrandRepository
 import com.robert.request.BrandRequest
 import com.robert.response.ErrorResponse
+import com.robert.utils.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -12,7 +14,7 @@ import io.ktor.server.routing.*
 
 
 fun Route.brandRoutes(
-    brandDao: BrandDao
+    brandRepository: BrandRepository
 ) {
     post("/add") {
         val request = call.receiveNullable<BrandRequest>() ?: kotlin.run {
@@ -29,20 +31,19 @@ fun Route.brandRoutes(
             description = request.description,
             logoUrl = request.logo,
         )
-        val result = brandDao.insertBrand(requestData)
-
-        if(result == null){
-            call.respond(
-                HttpStatusCode.InternalServerError,
-                ErrorResponse("Error while adding brand", "", HttpStatusCode.InternalServerError.value)
-            )
-        } else{
-            call.respond(HttpStatusCode.Created, result)
+        val result = brandRepository.insertBrand(requestData)
+        when(result){
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
         }
+        return@post
     }
 
     get("/all") {
-        val result = brandDao.getAllBrands()
-        call.respond(HttpStatusCode.OK, result)
+        val result = brandRepository.getAllBrands()
+        when(result){
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+        }
     }
 }

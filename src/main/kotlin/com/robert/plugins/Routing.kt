@@ -2,6 +2,8 @@ package com.robert.plugins
 
 import com.robert.db.dao.brand.BrandDao
 import com.robert.db.dao.category.CategoryDao
+import com.robert.repositories.shoe.BrandRepository
+import com.robert.repositories.shoe.CategoryRepository
 import com.robert.repositories.user.UserRepository
 import com.robert.routes.*
 import com.robert.security.hashing.HashingService
@@ -14,8 +16,8 @@ import io.ktor.server.routing.*
 fun Application.configureRouting(
     hashingService: HashingService,
     userRepository: UserRepository,
-    categoryDao: CategoryDao,
-    brandDao: BrandDao
+    categoryRepository: CategoryRepository,
+    brandRepository: BrandRepository
 ) {
     routing {
         get("/") {
@@ -36,10 +38,10 @@ fun Application.configureRouting(
 
         authenticate {
             route("/categories") {
-                categoryRoutes(categoryDao)
+                categoryRoutes(categoryRepository)
             }
             route("/brands") {
-                brandRoutes(brandDao)
+                brandRoutes(brandRepository)
             }
         }
     }

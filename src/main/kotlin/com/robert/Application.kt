@@ -5,6 +5,8 @@ import com.robert.db.dao.brand.BrandDaoImpl
 import com.robert.db.dao.category.CategoryDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
 import com.robert.plugins.*
+import com.robert.repositories.shoe.BrandRepositoryImpl
+import com.robert.repositories.shoe.CategoryRepositoryImpl
 import com.robert.repositories.user.UserRepositoryImpl
 import com.robert.security.hashing.SHA256HashingService
 import com.robert.security.tokens.JwtTokenService
@@ -33,6 +35,8 @@ fun Application.module() {
         tokenConfig = tokenConfig,
         hashingService = hashingService
     )
+    val categoryDao = CategoryDaoImpl()
+    val brandDao = BrandDaoImpl()
     configureSerialization()
     configureMonitoring()
     configureSecurity(
@@ -41,7 +45,7 @@ fun Application.module() {
     configureRouting(
         hashingService = hashingService,
         userRepository = userRepository,
-        categoryDao = CategoryDaoImpl(),
-        brandDao = BrandDaoImpl()
+        categoryRepository = CategoryRepositoryImpl(categoryDao = categoryDao),
+        brandRepository = BrandRepositoryImpl(brandDao = brandDao)
     )
 }
