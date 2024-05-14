@@ -1,6 +1,8 @@
 package com.robert
 
 import com.robert.db.DatabaseFactory
+import com.robert.db.dao.brand.BrandDaoImpl
+import com.robert.db.dao.category.CategoryDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
 import com.robert.plugins.*
 import com.robert.repositories.user.UserRepositoryImpl
@@ -38,6 +40,8 @@ fun Application.module() {
     )
     configureRouting(
         hashingService = hashingService,
-        userRepository = userRepository
+        userRepository = userRepository,
+        categoryDao = CategoryDaoImpl(),
+        brandDao = BrandDaoImpl()
     )
 }

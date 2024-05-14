@@ -16,7 +16,7 @@ class UserDaoImpl: UserDao {
         email = row[UsersTable.email],
         image = row[UsersTable.image],
         salt = row[UsersTable.salt],
-        createdAt = row[UsersTable.created],
+        createdAt = row[UsersTable.created].toString(),
     )
 
     override suspend fun createUser(user: User): User? = dbQuery {
@@ -26,7 +26,6 @@ class UserDaoImpl: UserDao {
             it[email] = user.email
             it[image] = user.image
             it[salt] = user.salt
-            it[created] = user.createdAt
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToNode)
     }

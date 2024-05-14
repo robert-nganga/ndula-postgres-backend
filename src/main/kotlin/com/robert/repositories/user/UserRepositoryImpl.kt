@@ -32,7 +32,7 @@ class UserRepositoryImpl(
                         value = createdUser.id.toString()
                     )
                 )
-                BaseResponse.SuccessResponse(data =  user.toUserResponse(token), status = HttpStatusCode.Created)
+                BaseResponse.SuccessResponse(data =  createdUser.toUserResponse(token), status = HttpStatusCode.Created)
             } else {
                 BaseResponse.ErrorResponse(message = "Error creating user", status = HttpStatusCode.InternalServerError)
             }

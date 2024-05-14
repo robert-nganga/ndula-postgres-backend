@@ -1,9 +1,9 @@
 package com.robert.plugins
 
+import com.robert.db.dao.brand.BrandDao
+import com.robert.db.dao.category.CategoryDao
 import com.robert.repositories.user.UserRepository
-import com.robert.routes.authCheck
-import com.robert.routes.login
-import com.robert.routes.signUp
+import com.robert.routes.*
 import com.robert.security.hashing.HashingService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -13,11 +13,13 @@ import io.ktor.server.routing.*
 
 fun Application.configureRouting(
     hashingService: HashingService,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    categoryDao: CategoryDao,
+    brandDao: BrandDao
 ) {
     routing {
         get("/") {
-            call.respond(HttpStatusCode.OK, mapOf("message" to "Healthy"))
+            call.respond(HttpStatusCode.OK, mapOf("status" to "Healthy"))
         }
         authenticate {
             authCheck()
@@ -30,6 +32,15 @@ fun Application.configureRouting(
                 hashingService = hashingService,
                 userRepository = userRepository
             )
+        }
+
+        authenticate {
+            route("/categories") {
+                categoryRoutes(categoryDao)
+            }
+            route("/brands") {
+                brandRoutes(brandDao)
+            }
         }
     }
 }

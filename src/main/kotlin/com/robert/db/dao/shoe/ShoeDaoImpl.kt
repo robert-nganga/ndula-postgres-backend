@@ -13,11 +13,11 @@ class ShoeDaoImpl: ShoeDao {
         val shoeId = row[ShoesTable.id]
 
         val images = ShoeImagesTable
-            .selectAll().where{ ShoeImagesTable.productId eq shoeId }
+            .select{ ShoeImagesTable.productId eq shoeId }
             .map{ it[ShoeImagesTable.imageUrl] }
 
         val sizes = ShoeSizesTable
-            .selectAll().where { ShoeSizesTable.productId eq shoeId }
+            .select{ ShoeSizesTable.productId eq shoeId }
             .map {
                 ShoeSize(
                     size = it[ShoeSizesTable.size],
@@ -31,11 +31,11 @@ class ShoeDaoImpl: ShoeDao {
             description = row[ShoesTable.description],
             price = row[ShoesTable.price].toDouble(),
             category = CategoriesTable
-                .selectAll().where { CategoriesTable.id eq row[ShoesTable.categoryId] }
+                .select{ CategoriesTable.id eq row[ShoesTable.categoryId] }
                 .map { it[CategoriesTable.name] }
                 .single(),
             brand = BrandsTable
-                    .selectAll().where { BrandsTable.id eq row[ShoesTable.brandId] }
+                    .select { BrandsTable.id eq row[ShoesTable.brandId] }
                     .map { it[BrandsTable.name] }
                     .single(),
             images = images,
@@ -49,11 +49,11 @@ class ShoeDaoImpl: ShoeDao {
             insertStatement[description] = shoe.description
             insertStatement[price] = shoe.price.toBigDecimal()
             insertStatement[categoryId] = CategoriesTable
-                .selectAll().where { CategoriesTable.name eq shoe.category }
+                .select { CategoriesTable.name eq shoe.category }
                 .map { it[CategoriesTable.id] }
                 .singleOrNull() ?: return@insert
             insertStatement[brandId] = BrandsTable
-                .selectAll().where { BrandsTable.name eq shoe.brand }
+                .select { BrandsTable.name eq shoe.brand }
                 .map { it[BrandsTable.id] }
                 .singleOrNull() ?: return@insert
         }
@@ -76,7 +76,7 @@ class ShoeDaoImpl: ShoeDao {
         }
 
         ShoesTable
-            .selectAll().where { ShoesTable.id eq shoeId }
+            .select { ShoesTable.id eq shoeId }
             .map(::resultRowToShoe)
             .singleOrNull()
     }

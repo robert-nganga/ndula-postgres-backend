@@ -53,7 +53,7 @@ fun Route.signUp(
             name = request.name,
             image = request.image,
             id = 0,
-            createdAt = System.currentTimeMillis(),
+            createdAt = "",
         )
         val result = userRepository.createUser(new)
         when(result){

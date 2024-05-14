@@ -11,7 +11,7 @@ data class UserResponse(
     val email: String,
     val image: String,
     val token: String,
-    val created: Long
+    val created: String
 )
 
 

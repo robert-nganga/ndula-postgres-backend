@@ -5,6 +5,7 @@ import com.robert.db.tables.shoe.CategoriesTable
 import com.robert.models.Category
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 
 class CategoryDaoImpl: CategoryDao {
@@ -16,7 +17,7 @@ class CategoryDaoImpl: CategoryDao {
     )
     override suspend fun getCategoryId(id: Int): Int? = dbQuery {
         CategoriesTable
-            .selectAll().where { CategoriesTable.id eq id }
+            .select{ CategoriesTable.id eq id }
             .map { it[CategoriesTable.id] }
             .singleOrNull()
     }

@@ -1,5 +1,6 @@
 package com.robert.db
 
+import com.robert.db.tables.shoe.*
 import com.robert.db.tables.user.UsersTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -21,6 +22,11 @@ object DatabaseFactory {
         val database =  Database.connect(createHikariDataSource())
         transaction {
             SchemaUtils.create(UsersTable)
+            SchemaUtils.create(BrandsTable)
+            SchemaUtils.create(CategoriesTable)
+            SchemaUtils.create(ShoesTable)
+            SchemaUtils.create(ShoeImagesTable)
+            SchemaUtils.create(ShoeSizesTable)
         }
     }
 

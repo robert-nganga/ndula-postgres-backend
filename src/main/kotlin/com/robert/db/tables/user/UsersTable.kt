@@ -1,6 +1,8 @@
 package com.robert.db.tables.user
 
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.CurrentDateTime
+import org.jetbrains.exposed.sql.javatime.datetime
 
 object UsersTable: Table() {
     val id = integer("id").autoIncrement()
@@ -9,6 +11,6 @@ object UsersTable: Table() {
     val image = varchar("image", 1024)
     val password  = varchar("password", 256)
     val salt = varchar("salt", 256)
-    val created = long("created")
+    val created = datetime("created_at").defaultExpression(CurrentDateTime)
     override val primaryKey = PrimaryKey(id)
 }

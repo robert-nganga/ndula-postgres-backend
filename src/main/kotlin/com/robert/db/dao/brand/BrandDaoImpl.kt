@@ -3,8 +3,10 @@ package com.robert.db.dao.brand
 import com.robert.db.DatabaseFactory.dbQuery
 import com.robert.db.tables.shoe.BrandsTable
 import com.robert.models.Brand
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class BrandDaoImpl:  BrandDao{
     private fun resultRowToBrand(row: ResultRow): Brand = Brand(
@@ -26,7 +28,7 @@ class BrandDaoImpl:  BrandDao{
 
     override suspend fun getBrandById(id: Int): Brand? = dbQuery {
         BrandsTable
-            .selectAll().where { BrandsTable.id eq id }
+            .select{ BrandsTable.id eq id }
             .map(::resultRowToBrand)
             .singleOrNull()
     }
