@@ -3,6 +3,7 @@ package com.robert.plugins
 import com.robert.db.dao.shoe.ShoeDao
 import com.robert.repositories.shoe.BrandRepository
 import com.robert.repositories.shoe.CategoryRepository
+import com.robert.repositories.shoe.ShoeRepository
 import com.robert.repositories.user.UserRepository
 import com.robert.routes.*
 import com.robert.security.hashing.HashingService
@@ -17,7 +18,7 @@ fun Application.configureRouting(
     userRepository: UserRepository,
     categoryRepository: CategoryRepository,
     brandRepository: BrandRepository,
-    shoeDao: ShoeDao
+    shoeRepository: ShoeRepository
 ) {
     routing {
         get("/") {
@@ -44,7 +45,7 @@ fun Application.configureRouting(
                 brandRoutes(brandRepository)
             }
             route("/shoes") {
-                shoeRoutes(shoeDao)
+                shoeRoutes(shoeRepository)
             }
         }
     }

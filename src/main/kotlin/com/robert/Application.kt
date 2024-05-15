@@ -8,6 +8,7 @@ import com.robert.db.dao.user.UserDaoImpl
 import com.robert.plugins.*
 import com.robert.repositories.shoe.BrandRepositoryImpl
 import com.robert.repositories.shoe.CategoryRepositoryImpl
+import com.robert.repositories.shoe.ShoeRepositoryImpl
 import com.robert.repositories.user.UserRepositoryImpl
 import com.robert.security.hashing.SHA256HashingService
 import com.robert.security.tokens.JwtTokenService
@@ -49,6 +50,6 @@ fun Application.module() {
         userRepository = userRepository,
         categoryRepository = CategoryRepositoryImpl(categoryDao = categoryDao),
         brandRepository = BrandRepositoryImpl(brandDao = brandDao),
-        shoeDao = shoeDao
+        shoeRepository = ShoeRepositoryImpl(shoeDao = shoeDao),
     )
 }
