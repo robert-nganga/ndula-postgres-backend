@@ -10,7 +10,7 @@ object ShoesTable: Table() {
     val description = text("description").nullable()
     val price = decimal("price", 10, 2)
     val categoryId = reference("category_id", CategoriesTable.id)
-    val brandId = reference("brand_id", BrandsTable.id)
+    val brandId = reference("brand_id", BrandsTable.id).nullable()
     val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
 
     override val primaryKey = PrimaryKey(id)

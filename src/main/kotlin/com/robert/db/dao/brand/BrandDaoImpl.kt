@@ -26,10 +26,10 @@ class BrandDaoImpl:  BrandDao{
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToBrand)
     }
 
-    override suspend fun getBrandById(id: Int): Brand? = dbQuery {
+    override suspend fun getBrandId(name: String): Int? = dbQuery {
         BrandsTable
-            .select{ BrandsTable.id eq id }
-            .map(::resultRowToBrand)
+            .select { BrandsTable.name.eq(name) }
+            .map { it[BrandsTable.id] }
             .singleOrNull()
     }
 

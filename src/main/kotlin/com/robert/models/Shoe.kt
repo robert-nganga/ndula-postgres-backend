@@ -8,7 +8,7 @@ data class Shoe(
     val description: String?,
     val price: Double,
     val category: String,
-    val brand: String,
+    val brand: String?,
     val images:  List<String>,
     val sizes: List<ShoeSize>,
     val createdAt: String

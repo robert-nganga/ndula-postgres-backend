@@ -15,9 +15,9 @@ class CategoryDaoImpl: CategoryDao {
         name = row[CategoriesTable.name],
         description = row[CategoriesTable.description]
     )
-    override suspend fun getCategoryId(id: Int): Int? = dbQuery {
+    override suspend fun getCategoryId(name: String): Int? = dbQuery {
         CategoriesTable
-            .select{ CategoriesTable.id eq id }
+            .select{ CategoriesTable.name eq name }
             .map { it[CategoriesTable.id] }
             .singleOrNull()
     }

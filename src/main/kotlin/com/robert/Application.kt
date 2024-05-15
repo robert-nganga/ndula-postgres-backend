@@ -3,6 +3,7 @@ package com.robert
 import com.robert.db.DatabaseFactory
 import com.robert.db.dao.brand.BrandDaoImpl
 import com.robert.db.dao.category.CategoryDaoImpl
+import com.robert.db.dao.shoe.ShoeDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
 import com.robert.plugins.*
 import com.robert.repositories.shoe.BrandRepositoryImpl
@@ -37,6 +38,7 @@ fun Application.module() {
     )
     val categoryDao = CategoryDaoImpl()
     val brandDao = BrandDaoImpl()
+    val shoeDao = ShoeDaoImpl()
     configureSerialization()
     configureMonitoring()
     configureSecurity(
@@ -46,6 +48,7 @@ fun Application.module() {
         hashingService = hashingService,
         userRepository = userRepository,
         categoryRepository = CategoryRepositoryImpl(categoryDao = categoryDao),
-        brandRepository = BrandRepositoryImpl(brandDao = brandDao)
+        brandRepository = BrandRepositoryImpl(brandDao = brandDao),
+        shoeDao = shoeDao
     )
 }

@@ -5,6 +5,6 @@ import com.robert.models.Brand
 interface BrandDao {
 
     suspend fun insertBrand(brand: Brand): Brand?
-    suspend fun getBrandById(id: Int): Brand?
+    suspend fun getBrandId(name: String): Int?
     suspend fun getAllBrands(): List<Brand>
 }
