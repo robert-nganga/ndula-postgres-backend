@@ -1,7 +1,5 @@
 package com.robert.routes
 
-import com.robert.db.dao.shoe.ShoeDao
-import com.robert.models.Shoe
 import com.robert.repositories.shoe.ShoeRepository
 import com.robert.request.ShoeRequest
 import com.robert.request.toShoe
