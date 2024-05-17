@@ -1,7 +1,6 @@
 package com.robert.db.dao.user
 
 import com.robert.db.DatabaseFactory.dbQuery
-import com.robert.db.dao.cart.CartDao
 import com.robert.db.dao.shoe.ShoeDao
 import com.robert.db.tables.cart.CartItemsTable
 import com.robert.db.tables.cart.CartTable
@@ -13,11 +12,9 @@ import com.robert.models.User
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
 
 class UserDaoImpl(
     private val shoeDao: ShoeDao,
-    private val cartDao: CartDao
 ): UserDao {
 
     private fun resultRowToNode(row: ResultRow): User {
@@ -69,15 +66,9 @@ class UserDaoImpl(
             it[email] = user.email
             it[image] = user.image
             it[salt] = user.salt
-            it[cartId] = 0 //Placeholder value
+            it[cartId] = CartTable.insert {} get CartTable.id
         }
-        val userId = insertStatement.resultedValues?.singleOrNull()?.get(UsersTable.id) ?: return@dbQuery null
-        val cartId = cartDao.createCart(userId).id
-        UsersTable.update({ UsersTable.id eq userId }) {
-            it[UsersTable.cartId] = cartId
-        }
-        val userRow = UsersTable.select { UsersTable.id eq userId }.single()
-        resultRowToNode(userRow)
+        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToNode)
     }
 
 
