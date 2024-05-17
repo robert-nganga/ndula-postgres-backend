@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 
 object CartTable: Table() {
     val id = integer("id").autoIncrement()
-    val userId = integer("user_id")
     val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
     val updatedAt = datetime("updated_at").defaultExpression(CurrentDateTime)
+    override val primaryKey = PrimaryKey(id)
 }

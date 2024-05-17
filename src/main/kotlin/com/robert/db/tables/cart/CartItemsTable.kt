@@ -8,4 +8,5 @@ object CartItemsTable: Table() {
     val cartId = integer("cart_id").references(CartTable.id)
     val shoeId = integer("shoe_id").references(ShoesTable.id)
     val quantity = integer("quantity")
+    override val primaryKey = PrimaryKey(id)
 }

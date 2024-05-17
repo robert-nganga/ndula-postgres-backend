@@ -45,9 +45,7 @@ class CartDaoImpl(
     }
 
     override suspend fun createCart(userId: Int): Cart = dbQuery {
-        val id = CartTable.insert {
-            it[CartTable.userId] = userId
-        } get CartTable.id
+        val id = CartTable.insert {} get CartTable.id
         getCartById(id)
     }
 

@@ -69,6 +69,7 @@ class UserDaoImpl(
             it[email] = user.email
             it[image] = user.image
             it[salt] = user.salt
+            it[cartId] = 0 //Placeholder value
         }
         val userId = insertStatement.resultedValues?.singleOrNull()?.get(UsersTable.id) ?: return@dbQuery null
         val cartId = cartDao.createCart(userId).id
