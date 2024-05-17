@@ -2,6 +2,7 @@ package com.robert
 
 import com.robert.db.DatabaseFactory
 import com.robert.db.dao.brand.BrandDaoImpl
+import com.robert.db.dao.cart.CartDaoImpl
 import com.robert.db.dao.category.CategoryDaoImpl
 import com.robert.db.dao.shoe.ShoeDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
@@ -28,18 +29,19 @@ fun Application.module() {
         secret = "my-secret"
     )
     val tokenService = JwtTokenService()
-    val userDao = UserDaoImpl()
     val hashingService = SHA256HashingService()
-
+    val categoryDao = CategoryDaoImpl()
+    val brandDao = BrandDaoImpl()
+    val shoeDao = ShoeDaoImpl()
+    val cartDao = CartDaoImpl(shoeDao = shoeDao)
+    val userDao = UserDaoImpl(shoeDao, cartDao)
     val userRepository = UserRepositoryImpl(
         userDao = userDao,
         tokenService = tokenService,
         tokenConfig = tokenConfig,
         hashingService = hashingService
     )
-    val categoryDao = CategoryDaoImpl()
-    val brandDao = BrandDaoImpl()
-    val shoeDao = ShoeDaoImpl()
+
     configureSerialization()
     configureMonitoring()
     configureSecurity(
