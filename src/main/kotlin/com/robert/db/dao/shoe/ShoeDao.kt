@@ -3,8 +3,10 @@ package com.robert.db.dao.shoe
 import com.robert.models.Brand
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
+import org.jetbrains.exposed.sql.ResultRow
 
 interface ShoeDao {
+    fun resultRowToShoe(row: ResultRow): Shoe
 
     suspend fun insertShoe(shoe: Shoe): Shoe?
 

@@ -1,11 +1,12 @@
 package com.robert.db.tables.cart
 
-import com.robert.db.tables.cart.CartItemsTable.autoIncrement
-import com.robert.db.tables.cart.CartItemsTable.integer
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.CurrentDateTime
+import org.jetbrains.exposed.sql.javatime.datetime
 
-object CartTable {
+object CartTable: Table() {
     val id = integer("id").autoIncrement()
     val userId = integer("user_id")
-    val createdAt = integer("created_at")
-    val updatedAt = integer("updated_at")
+    val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
+    val updatedAt = datetime("updated_at").defaultExpression(CurrentDateTime)
 }

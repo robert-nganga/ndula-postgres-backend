@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.*
 
 class ShoeDaoImpl: ShoeDao {
 
-    private fun resultRowToShoe(row: ResultRow): Shoe {
+    override fun resultRowToShoe(row: ResultRow): Shoe {
         val shoeId = row[ShoesTable.id]
 
         val images = ShoeImagesTable
@@ -47,6 +47,7 @@ class ShoeDaoImpl: ShoeDao {
             createdAt = row[ShoesTable.createdAt].toString()
         )
     }
+
     override suspend fun insertShoe(shoe: Shoe): Shoe? = dbQuery{
         val insertStatement = ShoesTable.insert { insertStatement ->
             insertStatement[name] = shoe.name
