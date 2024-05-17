@@ -1,17 +1,17 @@
 package com.robert.response
 
+import com.robert.models.Cart
 import com.robert.models.User
-import kotlinx.serialization.Serializable
 
 
-@Serializable
 data class UserResponse(
     val id: Int,
     val name: String,
     val email: String,
     val image: String,
     val token: String,
-    val created: String
+    val created: String,
+    val cart: Cart
 )
 
 
@@ -22,5 +22,6 @@ fun User.toUserResponse(token: String) = UserResponse(
     email = email,
     token = token,
     image = image,
-    created = createdAt
+    created = createdAt,
+    cart = cart
 )

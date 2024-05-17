@@ -1,5 +1,7 @@
 package com.robert.routes
 
+import com.robert.models.Cart
+import com.robert.models.CartItem
 import com.robert.models.User
 import com.robert.repositories.user.UserRepository
 import com.robert.request.AuthRequest
@@ -54,6 +56,7 @@ fun Route.signUp(
             image = request.image,
             id = 0,
             createdAt = "",
+            cart = Cart(0, emptyList(), "", "")
         )
         val result = userRepository.createUser(new)
         when(result){

@@ -6,12 +6,11 @@ import com.robert.db.dao.shoe.ShoeDao
 import com.robert.db.tables.cart.CartItemsTable
 import com.robert.db.tables.cart.CartTable
 import com.robert.db.tables.shoe.ShoesTable
-import com.robert.models.User
 import com.robert.db.tables.user.UsersTable
 import com.robert.models.Cart
 import com.robert.models.CartItem
+import com.robert.models.User
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
@@ -72,7 +71,7 @@ class UserDaoImpl(
             it[salt] = user.salt
         }
         val userId = insertStatement.resultedValues?.singleOrNull()?.get(UsersTable.id) ?: return@dbQuery null
-        val cartId = cartDao.createCart(userId)
+        val cartId = cartDao.createCart(userId).id
         UsersTable.update({ UsersTable.id eq userId }) {
             it[UsersTable.cartId] = cartId
         }
