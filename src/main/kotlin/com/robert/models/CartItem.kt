@@ -2,7 +2,6 @@ package com.robert.models
 
 data class CartItem(
     val id: Int,
-    val cartId: Int,
-    val shoeId: Int,
+    val shoe: Shoe,
     val quantity: Int
 )
