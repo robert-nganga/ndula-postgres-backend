@@ -53,5 +53,6 @@ fun Application.module() {
         categoryRepository = CategoryRepositoryImpl(categoryDao = categoryDao),
         brandRepository = BrandRepositoryImpl(brandDao = brandDao),
         shoeRepository = ShoeRepositoryImpl(shoeDao = shoeDao),
+        cartDao = cartDao,
     )
 }

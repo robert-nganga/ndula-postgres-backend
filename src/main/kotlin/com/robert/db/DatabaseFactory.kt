@@ -1,5 +1,7 @@
 package com.robert.db
 
+import com.robert.db.tables.cart.CartItemsTable
+import com.robert.db.tables.cart.CartTable
 import com.robert.db.tables.shoe.*
 import com.robert.db.tables.user.UsersTable
 import com.zaxxer.hikari.HikariConfig
@@ -27,6 +29,8 @@ object DatabaseFactory {
             SchemaUtils.create(ShoesTable)
             SchemaUtils.create(ShoeImagesTable)
             SchemaUtils.create(ShoeSizesTable)
+            SchemaUtils.create(CartTable)
+            SchemaUtils.create(CartItemsTable)
         }
     }
 

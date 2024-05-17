@@ -12,7 +12,7 @@ object UsersTable: Table() {
     val image = varchar("image", 1024)
     val password  = varchar("password", 256)
     val salt = varchar("salt", 256)
-    val cartId = integer("cart_id").references(CartTable.id)
+    val cartId = reference("cart_id", CartTable.id)
     val created = datetime("created_at").defaultExpression(CurrentDateTime)
     override val primaryKey = PrimaryKey(id)
 }
