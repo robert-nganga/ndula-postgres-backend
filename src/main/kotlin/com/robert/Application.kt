@@ -6,7 +6,11 @@ import com.robert.db.dao.cart.CartDaoImpl
 import com.robert.db.dao.category.CategoryDaoImpl
 import com.robert.db.dao.shoe.ShoeDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
-import com.robert.plugins.*
+import com.robert.plugins.configureMonitoring
+import com.robert.plugins.configureRouting
+import com.robert.plugins.configureSecurity
+import com.robert.plugins.configureSerialization
+import com.robert.repositories.cart.CartRepositoryImpl
 import com.robert.repositories.shoe.BrandRepositoryImpl
 import com.robert.repositories.shoe.CategoryRepositoryImpl
 import com.robert.repositories.shoe.ShoeRepositoryImpl
@@ -20,6 +24,7 @@ fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
+@Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
     DatabaseFactory.init()
     val tokenConfig = TokenConfig(
@@ -53,6 +58,6 @@ fun Application.module() {
         categoryRepository = CategoryRepositoryImpl(categoryDao = categoryDao),
         brandRepository = BrandRepositoryImpl(brandDao = brandDao),
         shoeRepository = ShoeRepositoryImpl(shoeDao = shoeDao),
-        cartDao = cartDao,
+        cartRepository = CartRepositoryImpl(cartDao = cartDao),
     )
 }

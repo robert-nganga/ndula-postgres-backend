@@ -1,9 +1,11 @@
 package com.robert.routes
 
 import com.robert.db.dao.cart.CartDao
+import com.robert.repositories.cart.CartRepository
 import com.robert.request.CartItemAddRequest
 import com.robert.request.CartItemRemoveRequest
 import com.robert.request.CartItemUpdateRequest
+import com.robert.utils.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -13,7 +15,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.cartRoutes(
-    cartDao: CartDao
+    cartRepository: CartRepository
 ){
     post("/add") {
         val principal = call.principal<JWTPrincipal>()
@@ -28,8 +30,12 @@ fun Route.cartRoutes(
             return@post
         }
 
-        val cart = cartDao.addItemToCart(cartId = request.cartId, shoeId = request.shoeId, quantity = request.quantity)
-        call.respond(HttpStatusCode.OK, cart)
+        val result = cartRepository.addItemToCart(cartId = request.cartId, shoeId = request.shoeId, quantity = request.quantity)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
+        return@post
     }
 
     post("/remove") {
@@ -45,7 +51,7 @@ fun Route.cartRoutes(
             return@post
         }
 
-        val cart = cartDao.removeItemFromCart(cartId = request.cartId, cartItemId = request.cartItemId)
+        val cart = cartRepository.removeItemFromCart(cartId = request.cartId, cartItemId = request.cartItemId)
         call.respond(HttpStatusCode.OK, cart)
     }
 
@@ -62,14 +68,14 @@ fun Route.cartRoutes(
             return@post
         }
 
-        val cart = cartDao.updateCartItemQuantity(cartId = request.cartId, cartItemId = request.cartItemId, newQuantity = request.quantity)
+        val cart = cartRepository.updateCartItemQuantity(cartId = request.cartId, cartItemId = request.cartItemId, newQuantity = request.quantity)
         call.respond(HttpStatusCode.OK, cart)
     }
 
     get("/{id}"){
         val cartId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
 
-        val cart = cartDao.getCartById(cartId)
+        val cart = cartRepository.getCartById(cartId)
         call.respond(HttpStatusCode.OK, cart)
     }
 }
