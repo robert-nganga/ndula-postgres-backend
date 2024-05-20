@@ -1,6 +1,5 @@
 package com.robert.routes
 
-import com.robert.db.dao.cart.CartDao
 import com.robert.repositories.cart.CartRepository
 import com.robert.request.CartItemAddRequest
 import com.robert.request.CartItemRemoveRequest
@@ -51,8 +50,12 @@ fun Route.cartRoutes(
             return@post
         }
 
-        val cart = cartRepository.removeItemFromCart(cartId = request.cartId, cartItemId = request.cartItemId)
-        call.respond(HttpStatusCode.OK, cart)
+        val result = cartRepository.removeItemFromCart(cartId = request.cartId, cartItemId = request.cartItemId)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
+        return@post
     }
 
     post("/update") {
@@ -68,14 +71,20 @@ fun Route.cartRoutes(
             return@post
         }
 
-        val cart = cartRepository.updateCartItemQuantity(cartId = request.cartId, cartItemId = request.cartItemId, newQuantity = request.quantity)
-        call.respond(HttpStatusCode.OK, cart)
+        val result = cartRepository.updateCartItemQuantity(cartId = request.cartId, cartItemId = request.cartItemId, newQuantity = request.quantity)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
     }
 
     get("/{id}"){
         val cartId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
 
-        val cart = cartRepository.getCartById(cartId)
-        call.respond(HttpStatusCode.OK, cart)
+        val result = cartRepository.getCartById(cartId)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
     }
 }
