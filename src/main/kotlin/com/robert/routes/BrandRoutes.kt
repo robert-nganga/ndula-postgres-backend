@@ -1,6 +1,5 @@
 package com.robert.routes
 
-import com.robert.db.dao.brand.BrandDao
 import com.robert.models.Brand
 import com.robert.repositories.shoe.BrandRepository
 import com.robert.request.BrandRequest

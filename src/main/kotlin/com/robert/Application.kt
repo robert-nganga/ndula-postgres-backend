@@ -34,7 +34,7 @@ fun Application.module() {
     val brandDao = BrandDaoImpl()
     val shoeDao = ShoeDaoImpl()
     val cartDao = CartDaoImpl(shoeDao = shoeDao)
-    val userDao = UserDaoImpl(shoeDao, cartDao)
+    val userDao = UserDaoImpl(shoeDao)
     val userRepository = UserRepositoryImpl(
         userDao = userDao,
         tokenService = tokenService,
