@@ -5,8 +5,8 @@ import org.jetbrains.exposed.sql.Table
 
 object CartItemsTable: Table() {
     val id = integer("id").autoIncrement()
-    val cartId = integer("cart_id").references(CartTable.id)
-    val shoeId = integer("shoe_id").references(ShoesTable.id)
+    val cartId = reference("cart_id", CartTable.id)
+    val shoeId = reference("shoe_id", CartTable.id)
     val quantity = integer("quantity")
     override val primaryKey = PrimaryKey(id)
 }
