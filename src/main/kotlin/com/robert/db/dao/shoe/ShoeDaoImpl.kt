@@ -88,11 +88,11 @@ class ShoeDaoImpl: ShoeDao {
             .singleOrNull()
     }
 
-    override suspend fun getShoeById(id: Int): Shoe? = dbQuery {
+    override suspend fun getShoeById(id: Int): Shoe = dbQuery {
         ShoesTable
             .select { ShoesTable.id eq id }
             .map(::resultRowToShoe)
-            .singleOrNull()
+            .single()
     }
 
     override suspend fun getAllShoesPaginated(page: Int, pageSize: Int): PaginatedShoes = dbQuery {

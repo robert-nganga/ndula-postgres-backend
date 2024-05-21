@@ -26,11 +26,7 @@ class ShoeRepositoryImpl(
     override suspend fun getShoeById(id: Int): BaseResponse<Shoe> {
         return try {
             val shoe = shoeDao.getShoeById(id)
-            if (shoe != null) {
-                BaseResponse.SuccessResponse(shoe)
-            } else {
-                BaseResponse.ErrorResponse("Shoe not found", HttpStatusCode.NotFound)
-            }
+            BaseResponse.SuccessResponse(shoe)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
         }
