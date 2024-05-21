@@ -39,6 +39,8 @@ fun Route.orderRoutes(
         }
 
         val oder = orderDao.updateOrderStatus(orderId = request.orderId, newStatus = request.status)
+        call.respond(HttpStatusCode.OK, oder)
+        return@post
     }
 
     get("/all/{id}"){
