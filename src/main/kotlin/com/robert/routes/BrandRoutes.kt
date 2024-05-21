@@ -38,6 +38,25 @@ fun Route.brandRoutes(
         return@post
     }
 
+    get("/{brand}"){
+        val brand = call.parameters["brand"] ?: kotlin.run {
+            call.respond(
+                HttpStatusCode.BadRequest,
+                ErrorResponse("Invalid request", "", HttpStatusCode.BadRequest.value)
+            )
+            return@get
+        }
+        val query = call.request.queryParameters["query"] ?: kotlin.run {
+            call.respond(HttpStatusCode.BadRequest)
+            return@get
+        }
+        val result = brandRepository.searchShoes(brand, query)
+        when(result){
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+        }
+    }
+
     get("/all") {
         val result = brandRepository.getAllBrands()
         when(result){

@@ -1,14 +1,16 @@
 package com.robert.db.dao.brand
 
 import com.robert.db.DatabaseFactory.dbQuery
+import com.robert.db.dao.shoe.ShoeDao
 import com.robert.db.tables.shoe.BrandsTable
+import com.robert.db.tables.shoe.ShoesTable
 import com.robert.models.Brand
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import com.robert.models.Shoe
+import org.jetbrains.exposed.sql.*
 
-class BrandDaoImpl:  BrandDao{
+class BrandDaoImpl(
+    private val shoeDao: ShoeDao
+):  BrandDao{
     private fun resultRowToBrand(row: ResultRow): Brand = Brand(
             id = row[BrandsTable.id],
             name = row[BrandsTable.name],
@@ -26,9 +28,20 @@ class BrandDaoImpl:  BrandDao{
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToBrand)
     }
 
+    override suspend fun searchShoes(brand: String, query: String): List<Shoe> = dbQuery{
+        val brandId = BrandsTable
+            .select { BrandsTable.name.eq(brand) }
+            .map { it[BrandsTable.id] }
+            .single()
+
+        ShoesTable
+            .select { ShoesTable.name.like("%$query%" ) and ShoesTable.brandId.eq(brandId) }
+            .map {shoe-> shoeDao.resultRowToShoe(shoe)}
+    }
+
     override suspend fun getBrandId(name: String): Int? = dbQuery {
         BrandsTable
-            .select { BrandsTable.name.eq(name) }
+            .select { BrandsTable.name.eq(name)  }
             .map { it[BrandsTable.id] }
             .singleOrNull()
     }

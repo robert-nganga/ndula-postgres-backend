@@ -2,6 +2,7 @@ package com.robert.repositories.shoe
 
 import com.robert.db.dao.brand.BrandDao
 import com.robert.models.Brand
+import com.robert.models.Shoe
 import com.robert.utils.BaseResponse
 import io.ktor.http.*
 import org.jetbrains.exposed.exceptions.ExposedSQLException
@@ -22,6 +23,15 @@ class BrandRepositoryImpl(
             BaseResponse.ErrorResponse(message = "Brand name already exists", status = HttpStatusCode.InternalServerError)
         } catch (e: Exception){
             BaseResponse.ErrorResponse(message = "Error adding brand", status = HttpStatusCode.InternalServerError)
+        }
+    }
+
+    override suspend fun searchShoes(brand: String, query: String): BaseResponse<List<Shoe>> {
+        return  try {
+            val result = brandDao.searchShoes(brand, query)
+            BaseResponse.SuccessResponse(data = result, status = HttpStatusCode.OK)
+        } catch (e: Exception) {
+            BaseResponse.ErrorResponse(message = "Error fetching shoes", status = HttpStatusCode.InternalServerError)
         }
     }
 
