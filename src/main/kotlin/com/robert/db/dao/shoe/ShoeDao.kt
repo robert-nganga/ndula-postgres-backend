@@ -9,6 +9,8 @@ interface ShoeDao {
 
     suspend fun insertShoe(shoe: Shoe): Shoe?
 
+    suspend fun searchShoes(query: String): List<Shoe>
+
     suspend fun getShoeById(id: Int): Shoe
 
     suspend fun getAllShoesPaginated(page: Int, pageSize: Int): PaginatedShoes

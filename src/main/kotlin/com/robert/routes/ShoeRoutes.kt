@@ -40,6 +40,18 @@ fun Route.shoeRoutes(
         }
     }
 
+    get("/search") {
+        val query = call.request.queryParameters["query"] ?: kotlin.run {
+            call.respond(HttpStatusCode.BadRequest)
+            return@get
+        }
+        val results = shoeRepository.searchShoes(query)
+        when(results){
+            is BaseResponse.SuccessResponse -> call.respond(results.status, results.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(results.status, results)
+        }
+    }
+
     get("/{id}") {
         val shoeId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
         val results = shoeRepository.getShoeById(shoeId)

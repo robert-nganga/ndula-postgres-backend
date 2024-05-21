@@ -10,6 +10,8 @@ interface ShoeRepository {
 
     suspend fun getShoeById(id: Int): BaseResponse<Shoe>
 
+    suspend fun searchShoes(query: String): BaseResponse<List<Shoe>>
+
     suspend fun getAllShoesPaginated(page: Int, pageSize: Int): BaseResponse<PaginatedShoes>
 
     suspend fun filterShoesByBrand(brand: String): BaseResponse<List<Shoe>>

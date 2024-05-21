@@ -32,6 +32,15 @@ class ShoeRepositoryImpl(
         }
     }
 
+    override suspend fun searchShoes(query: String): BaseResponse<List<Shoe>> {
+        return try {
+            val shoes = shoeDao.searchShoes(query)
+            BaseResponse.SuccessResponse(shoes)
+        } catch (e: Exception) {
+            BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
+        }
+    }
+
     override suspend fun getAllShoesPaginated(page: Int, pageSize: Int): BaseResponse<PaginatedShoes> {
         return try {
             val paginatedShoes = shoeDao.getAllShoesPaginated(page, pageSize)

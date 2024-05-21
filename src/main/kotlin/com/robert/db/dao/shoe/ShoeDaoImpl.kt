@@ -88,6 +88,13 @@ class ShoeDaoImpl: ShoeDao {
             .singleOrNull()
     }
 
+    override suspend fun searchShoes(query: String): List<Shoe> = dbQuery {
+        val queryLower = query.lowercase()
+        ShoesTable
+        .select { ShoesTable.name.lowerCase() like "%$queryLower%" }
+            .map(::resultRowToShoe)
+    }
+
     override suspend fun getShoeById(id: Int): Shoe = dbQuery {
         ShoesTable
             .select { ShoesTable.id eq id }
