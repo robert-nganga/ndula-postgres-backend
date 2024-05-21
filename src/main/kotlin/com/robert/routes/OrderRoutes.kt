@@ -1,9 +1,11 @@
 package com.robert.routes
 
 import com.robert.db.dao.order.OrderDao
+import com.robert.repositories.order.OrderRepository
 import com.robert.request.OrderRequest
 import com.robert.request.UpdateOrderStatusRequest
 import com.robert.response.ErrorResponse
+import com.robert.utils.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -12,7 +14,7 @@ import io.ktor.server.routing.*
 
 
 fun Route.orderRoutes(
-    orderDao: OrderDao
+    orderRepository: OrderRepository
 ) {
 
     post("/add") {
@@ -24,8 +26,11 @@ fun Route.orderRoutes(
             return@post
         }
 
-        val order = orderDao.createOrder(request)
-        call.respond(HttpStatusCode.Created, order)
+        val result = orderRepository.createOrder(request)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
         return@post
     }
 
@@ -38,21 +43,31 @@ fun Route.orderRoutes(
             return@post
         }
 
-        val oder = orderDao.updateOrderStatus(orderId = request.orderId, newStatus = request.status)
-        call.respond(HttpStatusCode.OK, oder)
+        val result = orderRepository.updateOrderStatus(orderId = request.orderId, newStatus = request.status)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
         return@post
     }
 
     get("/all/{id}"){
         val userId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-        val orders = orderDao.getAllOrdersForUser(userId)
-        call.respond(HttpStatusCode.OK, orders)
+        val result = orderRepository.getAllOrdersForUser(userId)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
         return@get
     }
 
     get("/{id}"){
         val orderId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-        val order = orderDao.getOrderById(orderId)
-        call.respond(HttpStatusCode.OK, order)
+        val result = orderRepository.getOrderById(orderId)
+        when(result){
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
+        return@get
     }
 }

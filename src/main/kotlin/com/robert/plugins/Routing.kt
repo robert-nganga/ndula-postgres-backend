@@ -3,6 +3,7 @@ package com.robert.plugins
 import com.robert.db.dao.order.OrderDao
 import com.robert.db.dao.shoe.ShoeDao
 import com.robert.repositories.cart.CartRepository
+import com.robert.repositories.order.OrderRepository
 import com.robert.repositories.shoe.BrandRepository
 import com.robert.repositories.shoe.CategoryRepository
 import com.robert.repositories.shoe.ShoeRepository
@@ -22,7 +23,7 @@ fun Application.configureRouting(
     brandRepository: BrandRepository,
     shoeRepository: ShoeRepository,
     cartRepository: CartRepository,
-    orderDao: OrderDao
+    orderRepository: OrderRepository
 ) {
     routing {
         get("/") {
@@ -55,7 +56,7 @@ fun Application.configureRouting(
                 cartRoutes(cartRepository)
             }
             route("/orders") {
-                orderRoutes(orderDao)
+                orderRoutes(orderRepository)
             }
         }
     }

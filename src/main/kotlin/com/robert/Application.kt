@@ -12,6 +12,7 @@ import com.robert.plugins.configureRouting
 import com.robert.plugins.configureSecurity
 import com.robert.plugins.configureSerialization
 import com.robert.repositories.cart.CartRepositoryImpl
+import com.robert.repositories.order.OrderRepositoryImpl
 import com.robert.repositories.shoe.BrandRepositoryImpl
 import com.robert.repositories.shoe.CategoryRepositoryImpl
 import com.robert.repositories.shoe.ShoeRepositoryImpl
@@ -61,6 +62,6 @@ fun Application.module() {
         brandRepository = BrandRepositoryImpl(brandDao = brandDao),
         shoeRepository = ShoeRepositoryImpl(shoeDao = shoeDao),
         cartRepository = CartRepositoryImpl(cartDao = cartDao),
-        orderDao = orderDao
+        orderRepository = OrderRepositoryImpl(orderDao = orderDao)
     )
 }
