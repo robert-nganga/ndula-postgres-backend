@@ -1,5 +1,7 @@
 package com.robert.plugins
 
+import com.robert.db.dao.order.OrderDao
+import com.robert.db.dao.shoe.ShoeDao
 import com.robert.repositories.cart.CartRepository
 import com.robert.repositories.shoe.BrandRepository
 import com.robert.repositories.shoe.CategoryRepository
@@ -19,7 +21,8 @@ fun Application.configureRouting(
     categoryRepository: CategoryRepository,
     brandRepository: BrandRepository,
     shoeRepository: ShoeRepository,
-    cartRepository: CartRepository
+    cartRepository: CartRepository,
+    orderDao: OrderDao
 ) {
     routing {
         get("/") {
@@ -50,6 +53,9 @@ fun Application.configureRouting(
             }
             route("/cart") {
                 cartRoutes(cartRepository)
+            }
+            route("/orders") {
+                orderRoutes(orderDao)
             }
         }
     }

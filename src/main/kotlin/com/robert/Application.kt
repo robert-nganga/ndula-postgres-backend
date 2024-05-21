@@ -4,6 +4,7 @@ import com.robert.db.DatabaseFactory
 import com.robert.db.dao.brand.BrandDaoImpl
 import com.robert.db.dao.cart.CartDaoImpl
 import com.robert.db.dao.category.CategoryDaoImpl
+import com.robert.db.dao.order.OrderDaoImpl
 import com.robert.db.dao.shoe.ShoeDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
 import com.robert.plugins.configureMonitoring
@@ -39,7 +40,8 @@ fun Application.module() {
     val brandDao = BrandDaoImpl()
     val shoeDao = ShoeDaoImpl()
     val cartDao = CartDaoImpl(shoeDao = shoeDao)
-    val userDao = UserDaoImpl(shoeDao)
+    val userDao = UserDaoImpl(shoeDao = shoeDao)
+    val orderDao = OrderDaoImpl(shoeDao = shoeDao)
     val userRepository = UserRepositoryImpl(
         userDao = userDao,
         tokenService = tokenService,
@@ -59,5 +61,6 @@ fun Application.module() {
         brandRepository = BrandRepositoryImpl(brandDao = brandDao),
         shoeRepository = ShoeRepositoryImpl(shoeDao = shoeDao),
         cartRepository = CartRepositoryImpl(cartDao = cartDao),
+        orderDao = orderDao
     )
 }
