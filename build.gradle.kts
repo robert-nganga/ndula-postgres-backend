@@ -46,6 +46,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
     implementation("org.ehcache:ehcache:$ehcache_version")
     implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
+    implementation("aws.sdk.kotlin:s3:1.0.0")
 
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
