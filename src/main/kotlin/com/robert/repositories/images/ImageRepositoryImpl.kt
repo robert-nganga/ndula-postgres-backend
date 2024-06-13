@@ -12,6 +12,7 @@ class ImageRepositoryImpl(
 
     override suspend fun uploadImage(bytes: ByteArray, fileName: String): BaseResponse<String> {
         return try {
+            println(fileName)
             val putObjectRequest = PutObjectRequest{
                 bucket = bucketName
                 key = fileName

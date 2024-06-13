@@ -17,7 +17,7 @@ class CategoryRepositoryImpl(
             if (insertedCategory == null)
                 BaseResponse.ErrorResponse(message = "Error inserting category", status = HttpStatusCode.InternalServerError)
             else
-                BaseResponse.SuccessResponse(data = insertedCategory)
+                BaseResponse.SuccessResponse(data = insertedCategory, status = HttpStatusCode.Created)
         } catch (e: ExposedSQLException) {
             BaseResponse.ErrorResponse(message = "Category name already exists", status = HttpStatusCode.InternalServerError)
         } catch (e: Exception) {

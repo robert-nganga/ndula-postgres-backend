@@ -21,6 +21,6 @@ interface ShoeDao {
 
     suspend fun updateShoe(shoe: Shoe): Shoe?
 
-    suspend fun deleteShoe(shoe: Shoe): Boolean
+    suspend fun deleteShoe(shoeId: Int): Boolean
 
 }

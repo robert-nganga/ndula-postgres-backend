@@ -6,6 +6,7 @@ import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
 import com.robert.models.ShoeSize
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class ShoeDaoImpl: ShoeDao {
 
@@ -48,7 +49,7 @@ class ShoeDaoImpl: ShoeDao {
         )
     }
 
-    override suspend fun insertShoe(shoe: Shoe): Shoe? = dbQuery{
+    override suspend fun insertShoe(shoe: Shoe): Shoe? = dbQuery {
         val insertStatement = ShoesTable.insert { insertStatement ->
             insertStatement[name] = shoe.name
             insertStatement[description] = shoe.description
@@ -132,11 +133,62 @@ class ShoeDaoImpl: ShoeDao {
             }
     }
 
-    override suspend fun updateShoe(shoe: Shoe): Shoe? {
-        TODO("Not yet implemented")
+    override suspend fun updateShoe(shoe: Shoe): Shoe? = dbQuery {
+        val updatedCount = ShoesTable.update({ ShoesTable.id eq shoe.id }) { updateStatement ->
+            updateStatement[name] = shoe.name
+            updateStatement[description] = shoe.description
+            updateStatement[price] = shoe.price.toBigDecimal()
+            updateStatement[categoryId] = CategoriesTable
+                .select { CategoriesTable.name eq shoe.category }
+                .map { it[CategoriesTable.id] }
+                .singleOrNull() ?: return@update
+            updateStatement[brandId] = shoe.brand?.let { brand ->
+                BrandsTable
+                    .select { BrandsTable.name eq brand }
+                    .map { it[BrandsTable.id] }
+                    .singleOrNull()
+            }
+        }
+
+        if (updatedCount > 0) {
+            // Update shoe images
+            ShoeImagesTable.deleteWhere { productId eq shoe.id }
+            shoe.images.forEach { image ->
+                ShoeImagesTable.insert {
+                    it[productId] = shoe.id
+                    it[imageUrl] = image
+                }
+            }
+
+            // Update shoe sizes
+            ShoeSizesTable.deleteWhere { productId eq shoe.id }
+            shoe.sizes.forEach { shoeSize ->
+                ShoeSizesTable.insert {
+                    it[productId] = shoe.id
+                    it[size] = shoeSize.size
+                    it[quantity] = shoeSize.quantity
+                }
+            }
+
+            ShoesTable
+                .select { ShoesTable.id eq shoe.id }
+                .map(::resultRowToShoe)
+                .singleOrNull()
+        } else {
+            null
+        }
     }
 
-    override suspend fun deleteShoe(shoe: Shoe): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun deleteShoe(shoeId: Int): Boolean {
+        val deletedRows = ShoesTable.deleteWhere { id eq shoeId }
+
+        return if (deletedRows > 0) {
+            // Delete related data
+            ShoeImagesTable.deleteWhere { productId eq shoeId }
+            ShoeSizesTable.deleteWhere { productId eq shoeId }
+            true
+        } else {
+            false
+        }
     }
 }

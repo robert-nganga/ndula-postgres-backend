@@ -32,7 +32,7 @@ fun Route.shoeRoutes(
 
     get("/all") {
         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
-        val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 10
+        val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 15
         val results = shoeRepository.getAllShoesPaginated(page, pageSize)
         when(results){
             is BaseResponse.SuccessResponse -> call.respond(results.status, results.data!!)

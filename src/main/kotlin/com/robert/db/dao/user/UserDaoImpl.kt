@@ -12,6 +12,7 @@ import com.robert.models.User
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 class UserDaoImpl(
     private val shoeDao: ShoeDao,
@@ -71,10 +72,21 @@ class UserDaoImpl(
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToNode)
     }
 
+    override suspend fun updateUser(user: User): User?= dbQuery  {
+        UsersTable.update({ UsersTable.id eq user.id }) {
+            it[name] = user.name
+            it[email] = user.email
+            it[image] = user.image
+        }
+        UsersTable.select { UsersTable.id eq user.id }
+        .map(::resultRowToNode)
+        .singleOrNull()
+    }
+
 
     override suspend fun findUserByEmail(email: String): User? = dbQuery {
         UsersTable
-            .select{ UsersTable.email eq email }
+            .select { UsersTable.email eq email }
             .map(::resultRowToNode)
             .singleOrNull()
     }

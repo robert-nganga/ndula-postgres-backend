@@ -70,12 +70,30 @@ class ShoeRepositoryImpl(
 
 
     override suspend fun updateShoe(shoe: Shoe): BaseResponse<Shoe> {
-        // TODO: Implement update shoe logic
-        return BaseResponse.ErrorResponse("Not implemented yet", HttpStatusCode.NotImplemented)
+        return try {
+            val updatedShoe = shoeDao.updateShoe(shoe)
+            if (updatedShoe != null) {
+                BaseResponse.SuccessResponse(data = updatedShoe)
+            } else {
+                BaseResponse.ErrorResponse("Failed to update shoe", HttpStatusCode.BadRequest)
+            }
+        } catch (e: Exception) {
+            BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
+        }
     }
 
     override suspend fun deleteShoe(id: Int): BaseResponse<Shoe> {
-        // TODO: Implement delete shoe logic
-        return BaseResponse.ErrorResponse("Not implemented yet", HttpStatusCode.NotImplemented)
+        return try {
+            val shoe = shoeDao.getShoeById(id)
+            val isDeleted = shoeDao.deleteShoe(id)
+            if (isDeleted) {
+                BaseResponse.SuccessResponse(data = shoe)
+            } else {
+                BaseResponse.ErrorResponse("Failed to delete shoe", HttpStatusCode.BadRequest)
+            }
+        } catch (e: Exception) {
+            BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
+        }
+
     }
 }
