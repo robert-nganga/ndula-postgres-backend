@@ -11,7 +11,7 @@ data class UserResponse(
     val image: String,
     val token: String,
     val created: String,
-    val cart: Cart
+    val cartId: Int
 )
 
 
@@ -23,5 +23,5 @@ fun User.toUserResponse(token: String) = UserResponse(
     token = token,
     image = image,
     created = createdAt,
-    cart = cart
+    cartId = cart.id
 )

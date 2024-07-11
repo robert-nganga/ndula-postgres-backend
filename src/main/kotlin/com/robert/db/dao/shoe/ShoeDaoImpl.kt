@@ -4,7 +4,7 @@ import com.robert.db.DatabaseFactory.dbQuery
 import com.robert.db.tables.shoe.*
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
-import com.robert.models.ShoeSize
+import com.robert.models.ShoeVariant
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -17,12 +17,15 @@ class ShoeDaoImpl: ShoeDao {
             .select{ ShoeImagesTable.productId eq shoeId }
             .map{ it[ShoeImagesTable.imageUrl] }
 
-        val sizes = ShoeSizesTable
-            .select{ ShoeSizesTable.productId eq shoeId }
+        val variants = ShoeVariationsTable
+            .select{ ShoeVariationsTable.productId eq shoeId }
             .map {
-                ShoeSize(
-                    size = it[ShoeSizesTable.size],
-                    quantity = it[ShoeSizesTable.quantity]
+                ShoeVariant(
+                    id = it[ShoeVariationsTable.id],
+                    size = it[ShoeVariationsTable.size],
+                    quantity = it[ShoeVariationsTable.quantity],
+                    color = it[ShoeVariationsTable.color],
+                    price = it[ShoeVariationsTable.price]
                 )
             }
 
@@ -37,14 +40,13 @@ class ShoeDaoImpl: ShoeDao {
             id = shoeId,
             name = row[ShoesTable.name],
             description = row[ShoesTable.description],
-            price = row[ShoesTable.price].toDouble(),
             category = CategoriesTable
                 .select{ CategoriesTable.id eq row[ShoesTable.categoryId] }
                 .map { it[CategoriesTable.name] }
                 .single(),
             brand = brand,
             images = images,
-            sizes = sizes,
+            variants = variants,
             createdAt = row[ShoesTable.createdAt].toString()
         )
     }
@@ -53,7 +55,6 @@ class ShoeDaoImpl: ShoeDao {
         val insertStatement = ShoesTable.insert { insertStatement ->
             insertStatement[name] = shoe.name
             insertStatement[description] = shoe.description
-            insertStatement[price] = shoe.price.toBigDecimal()
             insertStatement[categoryId] = CategoriesTable
                 .select { CategoriesTable.name eq shoe.category }
                 .map { it[CategoriesTable.id] }
@@ -75,11 +76,13 @@ class ShoeDaoImpl: ShoeDao {
             }
         }
 
-        shoe.sizes.forEach { shoeSize ->
-            ShoeSizesTable.insert {
+        shoe.variants.forEach { shoeVariant ->
+            ShoeVariationsTable.insert {
                 it[productId] = shoeId
-                it[size] = shoeSize.size
-                it[quantity] = shoeSize.quantity
+                it[size] = shoeVariant.size
+                it[quantity] = shoeVariant.quantity
+                it[price] = shoeVariant.price
+                it[color] = shoeVariant.color
             }
         }
 
@@ -137,7 +140,6 @@ class ShoeDaoImpl: ShoeDao {
         val updatedCount = ShoesTable.update({ ShoesTable.id eq shoe.id }) { updateStatement ->
             updateStatement[name] = shoe.name
             updateStatement[description] = shoe.description
-            updateStatement[price] = shoe.price.toBigDecimal()
             updateStatement[categoryId] = CategoriesTable
                 .select { CategoriesTable.name eq shoe.category }
                 .map { it[CategoriesTable.id] }
@@ -146,7 +148,7 @@ class ShoeDaoImpl: ShoeDao {
                 BrandsTable
                     .select { BrandsTable.name eq brand }
                     .map { it[BrandsTable.id] }
-                    .singleOrNull()
+                    .singleOrNull() ?: return@update
             }
         }
 
@@ -160,13 +162,15 @@ class ShoeDaoImpl: ShoeDao {
                 }
             }
 
-            // Update shoe sizes
-            ShoeSizesTable.deleteWhere { productId eq shoe.id }
-            shoe.sizes.forEach { shoeSize ->
-                ShoeSizesTable.insert {
+            // Update shoe variants
+            ShoeVariationsTable.deleteWhere { productId eq shoe.id }
+            shoe.variants.forEach { shoeSize ->
+                ShoeVariationsTable.insert {
                     it[productId] = shoe.id
                     it[size] = shoeSize.size
                     it[quantity] = shoeSize.quantity
+                    it[color] = shoeSize.color
+                    it[price] = shoeSize.price
                 }
             }
 
@@ -179,13 +183,13 @@ class ShoeDaoImpl: ShoeDao {
         }
     }
 
-    override suspend fun deleteShoe(shoeId: Int): Boolean {
+    override suspend fun deleteShoe(shoeId: Int): Boolean = dbQuery{
         val deletedRows = ShoesTable.deleteWhere { id eq shoeId }
 
-        return if (deletedRows > 0) {
+        if (deletedRows > 0) {
             // Delete related data
             ShoeImagesTable.deleteWhere { productId eq shoeId }
-            ShoeSizesTable.deleteWhere { productId eq shoeId }
+            ShoeVariationsTable.deleteWhere { productId eq shoeId }
             true
         } else {
             false

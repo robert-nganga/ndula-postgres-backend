@@ -6,10 +6,9 @@ data class Shoe(
     val id: Int,
     val name: String,
     val description: String?,
-    val price: Double,
     val category: String,
     val brand: String?,
     val images:  List<String>,
-    val sizes: List<ShoeSize>,
+    val variants: List<ShoeVariant>,
     val createdAt: String
 )

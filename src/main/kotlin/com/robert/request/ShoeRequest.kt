@@ -1,7 +1,7 @@
 package com.robert.request
 
 import com.robert.models.Shoe
-import com.robert.models.ShoeSize
+import com.robert.models.ShoeVariant
 
 data class ShoeRequest(
     val name: String,
@@ -10,17 +10,16 @@ data class ShoeRequest(
     val category: String,
     val brand: String?,
     val images:  List<String>,
-    val sizes: List<ShoeSize>,
+    val variants: List<ShoeVariant>,
 )
 
 fun ShoeRequest.toShoe() = Shoe(
     id = 0,
     name = name,
     description = description,
-    price = price,
     category = category,
     brand = brand,
     images = images,
-    sizes = sizes,
+    variants = variants,
     createdAt = "",
 )

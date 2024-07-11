@@ -30,7 +30,7 @@ object DatabaseFactory {
             SchemaUtils.create(CategoriesTable)
             SchemaUtils.create(ShoesTable)
             SchemaUtils.create(ShoeImagesTable)
-            SchemaUtils.create(ShoeSizesTable)
+            SchemaUtils.create(ShoeVariationsTable)
             SchemaUtils.create(CartTable)
             SchemaUtils.create(CartItemsTable)
             SchemaUtils.create(OrdersTable)

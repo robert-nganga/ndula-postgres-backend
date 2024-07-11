@@ -1,7 +1,5 @@
 package com.robert
 
-import aws.smithy.kotlin.runtime.content.ByteStream
-import aws.smithy.kotlin.runtime.content.fromFile
 import com.robert.aws.S3ClientFactory
 import com.robert.db.DatabaseFactory
 import com.robert.db.dao.brand.BrandDaoImpl
@@ -26,7 +24,6 @@ import com.robert.security.tokens.JwtTokenService
 import com.robert.security.tokens.TokenConfig
 import io.ktor.server.application.*
 import kotlinx.coroutines.runBlocking
-import java.io.File
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
