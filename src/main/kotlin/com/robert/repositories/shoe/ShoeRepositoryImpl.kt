@@ -3,6 +3,7 @@ package com.robert.repositories.shoe
 import com.robert.db.dao.shoe.ShoeDao
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
+import com.robert.request.ShoeRequest
 import com.robert.utils.BaseResponse
 import io.ktor.http.*
 
@@ -10,7 +11,7 @@ class ShoeRepositoryImpl(
     private val shoeDao: ShoeDao
 ) : ShoeRepository {
 
-    override suspend fun insertShoe(shoe: Shoe): BaseResponse<Shoe> {
+    override suspend fun insertShoe(shoe: ShoeRequest): BaseResponse<Shoe> {
         return try {
             val insertedShoe = shoeDao.insertShoe(shoe)
             if (insertedShoe != null) {

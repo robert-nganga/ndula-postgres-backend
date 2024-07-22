@@ -2,11 +2,12 @@ package com.robert.repositories.shoe
 
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
+import com.robert.request.ShoeRequest
 import com.robert.utils.BaseResponse
 
 interface ShoeRepository {
 
-    suspend fun insertShoe(shoe: Shoe): BaseResponse<Shoe>
+    suspend fun insertShoe(shoe: ShoeRequest): BaseResponse<Shoe>
 
     suspend fun getShoeById(id: Int): BaseResponse<Shoe>
 

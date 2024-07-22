@@ -9,6 +9,7 @@ object ShoesTable: Table() {
     val name = varchar("name", 255)
     val description = text("description").nullable()
     val price = decimal("price", 10, 2)
+    val productType = varchar("product_type", 100)
     val categoryId = reference("category_id", CategoriesTable.id)
     val brandId = reference("brand_id", BrandsTable.id).nullable()
     val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)

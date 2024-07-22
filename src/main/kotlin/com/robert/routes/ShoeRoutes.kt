@@ -3,7 +3,6 @@ package com.robert.routes
 import com.robert.models.Shoe
 import com.robert.repositories.shoe.ShoeRepository
 import com.robert.request.ShoeRequest
-import com.robert.request.toShoe
 import com.robert.response.ErrorResponse
 import com.robert.utils.BaseResponse
 import io.ktor.http.*
@@ -23,8 +22,7 @@ fun Route.shoeRoutes(
             )
             return@post
         }
-        val shoe = request.toShoe()
-        when(val result = shoeRepository.insertShoe(shoe)){
+        when(val result = shoeRepository.insertShoe(request)){
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }

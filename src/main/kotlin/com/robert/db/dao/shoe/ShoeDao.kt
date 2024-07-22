@@ -2,12 +2,13 @@ package com.robert.db.dao.shoe
 
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
+import com.robert.request.ShoeRequest
 import org.jetbrains.exposed.sql.ResultRow
 
 interface ShoeDao {
     fun resultRowToShoe(row: ResultRow): Shoe
 
-    suspend fun insertShoe(shoe: Shoe): Shoe?
+    suspend fun insertShoe(shoe: ShoeRequest): Shoe?
 
     suspend fun searchShoes(query: String): List<Shoe>
 

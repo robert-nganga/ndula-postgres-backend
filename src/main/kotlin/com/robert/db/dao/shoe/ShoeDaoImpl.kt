@@ -2,9 +2,11 @@ package com.robert.db.dao.shoe
 
 import com.robert.db.DatabaseFactory.dbQuery
 import com.robert.db.tables.shoe.*
+import com.robert.models.Brand
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
 import com.robert.models.ShoeVariant
+import com.robert.request.ShoeRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -25,20 +27,30 @@ class ShoeDaoImpl: ShoeDao {
                     size = it[ShoeVariationsTable.size],
                     quantity = it[ShoeVariationsTable.quantity],
                     color = it[ShoeVariationsTable.color],
-                    price = it[ShoeVariationsTable.price]
+                    price = it[ShoeVariationsTable.price],
+                    image = it[ShoeVariationsTable.image]
                 )
             }
 
         val brand = row[ShoesTable.brandId]?.let { brandId ->
             BrandsTable
                 .select { BrandsTable.id eq brandId }
-                .map { it[BrandsTable.name] }
+                .map {
+                    Brand(
+                        id = it[BrandsTable.id],
+                        name = it[BrandsTable.name],
+                        description = it[BrandsTable.description],
+                        logoUrl = it[BrandsTable.logoUrl]
+                    )
+                }
                 .singleOrNull()
         }
 
         return Shoe(
             id = shoeId,
             name = row[ShoesTable.name],
+            price = row[ShoesTable.price].toDouble(),
+            productType = row[ShoesTable.productType],
             description = row[ShoesTable.description],
             category = CategoriesTable
                 .select{ CategoriesTable.id eq row[ShoesTable.categoryId] }
@@ -51,10 +63,12 @@ class ShoeDaoImpl: ShoeDao {
         )
     }
 
-    override suspend fun insertShoe(shoe: Shoe): Shoe? = dbQuery {
+    override suspend fun insertShoe(shoe: ShoeRequest): Shoe? = dbQuery {
         val insertStatement = ShoesTable.insert { insertStatement ->
             insertStatement[name] = shoe.name
+            insertStatement[productType] = shoe.productType
             insertStatement[description] = shoe.description
+            insertStatement[price] = shoe.price.toBigDecimal()
             insertStatement[categoryId] = CategoriesTable
                 .select { CategoriesTable.name eq shoe.category }
                 .map { it[CategoriesTable.id] }
@@ -79,6 +93,7 @@ class ShoeDaoImpl: ShoeDao {
         shoe.variants.forEach { shoeVariant ->
             ShoeVariationsTable.insert {
                 it[productId] = shoeId
+                it[image] = shoeVariant.image
                 it[size] = shoeVariant.size
                 it[quantity] = shoeVariant.quantity
                 it[price] = shoeVariant.price
@@ -139,6 +154,8 @@ class ShoeDaoImpl: ShoeDao {
     override suspend fun updateShoe(shoe: Shoe): Shoe? = dbQuery {
         val updatedCount = ShoesTable.update({ ShoesTable.id eq shoe.id }) { updateStatement ->
             updateStatement[name] = shoe.name
+            updateStatement[price] = shoe.price.toBigDecimal()
+            updateStatement[productType] = shoe.productType
             updateStatement[description] = shoe.description
             updateStatement[categoryId] = CategoriesTable
                 .select { CategoriesTable.name eq shoe.category }
@@ -146,7 +163,7 @@ class ShoeDaoImpl: ShoeDao {
                 .singleOrNull() ?: return@update
             updateStatement[brandId] = shoe.brand?.let { brand ->
                 BrandsTable
-                    .select { BrandsTable.name eq brand }
+                    .select { BrandsTable.name eq brand.name }
                     .map { it[BrandsTable.id] }
                     .singleOrNull() ?: return@update
             }
@@ -164,13 +181,14 @@ class ShoeDaoImpl: ShoeDao {
 
             // Update shoe variants
             ShoeVariationsTable.deleteWhere { productId eq shoe.id }
-            shoe.variants.forEach { shoeSize ->
+            shoe.variants.forEach { shoeVariant ->
                 ShoeVariationsTable.insert {
                     it[productId] = shoe.id
-                    it[size] = shoeSize.size
-                    it[quantity] = shoeSize.quantity
-                    it[color] = shoeSize.color
-                    it[price] = shoeSize.price
+                    it[image] = shoeVariant.image
+                    it[size] = shoeVariant.size
+                    it[quantity] = shoeVariant.quantity
+                    it[color] = shoeVariant.color
+                    it[price] = shoeVariant.price
                 }
             }
 

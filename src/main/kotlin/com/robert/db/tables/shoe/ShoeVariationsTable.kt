@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Table
 
 object ShoeVariationsTable: Table() {
     val id = integer("id").autoIncrement()
+    val image = varchar("image", 1024).nullable()
     val productId = reference("product_id", ShoesTable.id, onDelete = ReferenceOption.CASCADE)
     val size = integer("size")
     val color = varchar("color", 256)
