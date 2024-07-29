@@ -10,15 +10,15 @@ interface ShoeDao {
 
     suspend fun insertShoe(shoe: ShoeRequest): Shoe?
 
-    suspend fun searchShoes(query: String): List<Shoe>
+    suspend fun searchShoes(query: String, userId: Int?): List<Shoe>
 
-    suspend fun getShoeById(id: Int): Shoe
+    suspend fun getShoeById(id: Int, userId: Int?): Shoe
 
-    suspend fun getAllShoesPaginated(page: Int, pageSize: Int): PaginatedShoes
+    suspend fun getAllShoesPaginated(page: Int, pageSize: Int, userId: Int?): PaginatedShoes
 
-    suspend fun filterShoesByBrand(brand: String): List<Shoe>
+    suspend fun filterShoesByBrand(brand: String, userId: Int?): List<Shoe>
 
-    suspend fun filterShoesByCategory(category: String): List<Shoe>
+    suspend fun filterShoesByCategory(category: String, userId: Int?): List<Shoe>
 
     suspend fun updateShoe(shoe: Shoe): Shoe?
 

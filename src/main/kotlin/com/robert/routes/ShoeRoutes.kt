@@ -5,6 +5,7 @@ import com.robert.repositories.shoe.ShoeRepository
 import com.robert.request.ShoeRequest
 import com.robert.response.ErrorResponse
 import com.robert.utils.BaseResponse
+import com.robert.utils.getUserIdFromAuthToken
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -31,7 +32,8 @@ fun Route.shoeRoutes(
     get("/all") {
         val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
         val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 15
-        when(val results = shoeRepository.getAllShoesPaginated(page, pageSize)){
+        val userId = getUserIdFromAuthToken()
+        when(val results = shoeRepository.getAllShoesPaginated(page, pageSize, userId)){
             is BaseResponse.SuccessResponse -> call.respond(results.status, results.data!!)
             is BaseResponse.ErrorResponse -> call.respond(results.status, results)
         }
@@ -42,7 +44,8 @@ fun Route.shoeRoutes(
             call.respond(HttpStatusCode.BadRequest)
             return@get
         }
-        when(val results = shoeRepository.searchShoes(query)){
+        val userId = getUserIdFromAuthToken()
+        when(val results = shoeRepository.searchShoes(query, userId)){
             is BaseResponse.SuccessResponse -> call.respond(results.status, results.data!!)
             is BaseResponse.ErrorResponse -> call.respond(results.status, results)
         }
@@ -50,7 +53,8 @@ fun Route.shoeRoutes(
 
     get("/{id}") {
         val shoeId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-        when(val results = shoeRepository.getShoeById(shoeId)){
+        val userId = getUserIdFromAuthToken()
+        when(val results = shoeRepository.getShoeById(shoeId, userId)){
             is BaseResponse.SuccessResponse -> call.respond(results.status, results.data!!)
             is BaseResponse.ErrorResponse -> call.respond(results.status, results)
         }
@@ -61,7 +65,8 @@ fun Route.shoeRoutes(
             call.respond(HttpStatusCode.BadRequest)
             return@get
         }
-        when(val result = shoeRepository.filterShoesByBrand(brand)){
+        val userId = getUserIdFromAuthToken()
+        when(val result = shoeRepository.filterShoesByBrand(brand, userId)){
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }
@@ -72,7 +77,8 @@ fun Route.shoeRoutes(
             call.respond(HttpStatusCode.BadRequest)
             return@get
         }
-        when(val result = shoeRepository.filterShoesByCategory(category)){
+        val userId = getUserIdFromAuthToken()
+        when(val result = shoeRepository.filterShoesByCategory(category, userId)){
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }

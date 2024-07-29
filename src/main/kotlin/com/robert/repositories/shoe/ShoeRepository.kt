@@ -9,15 +9,15 @@ interface ShoeRepository {
 
     suspend fun insertShoe(shoe: ShoeRequest): BaseResponse<Shoe>
 
-    suspend fun getShoeById(id: Int): BaseResponse<Shoe>
+    suspend fun getShoeById(id: Int, userId: Int?): BaseResponse<Shoe>
 
-    suspend fun searchShoes(query: String): BaseResponse<List<Shoe>>
+    suspend fun searchShoes(query: String, userId: Int?): BaseResponse<List<Shoe>>
 
-    suspend fun getAllShoesPaginated(page: Int, pageSize: Int): BaseResponse<PaginatedShoes>
+    suspend fun getAllShoesPaginated(page: Int, pageSize: Int, userId: Int?): BaseResponse<PaginatedShoes>
 
-    suspend fun filterShoesByBrand(brand: String): BaseResponse<List<Shoe>>
+    suspend fun filterShoesByBrand(brand: String, userId: Int?): BaseResponse<List<Shoe>>
 
-    suspend fun filterShoesByCategory(category: String): BaseResponse<List<Shoe>>
+    suspend fun filterShoesByCategory(category: String, userId: Int?): BaseResponse<List<Shoe>>
 
     suspend fun updateShoe(shoe: Shoe): BaseResponse<Shoe>
 

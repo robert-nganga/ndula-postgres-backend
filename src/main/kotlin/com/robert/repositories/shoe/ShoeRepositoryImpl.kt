@@ -24,45 +24,45 @@ class ShoeRepositoryImpl(
         }
     }
 
-    override suspend fun getShoeById(id: Int): BaseResponse<Shoe> {
+    override suspend fun getShoeById(id: Int, userId: Int?): BaseResponse<Shoe> {
         return try {
-            val shoe = shoeDao.getShoeById(id)
+            val shoe = shoeDao.getShoeById(id, userId)
             BaseResponse.SuccessResponse(shoe)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
         }
     }
 
-    override suspend fun searchShoes(query: String): BaseResponse<List<Shoe>> {
+    override suspend fun searchShoes(query: String, userId: Int?): BaseResponse<List<Shoe>> {
         return try {
-            val shoes = shoeDao.searchShoes(query)
+            val shoes = shoeDao.searchShoes(query, userId)
             BaseResponse.SuccessResponse(shoes)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
         }
     }
 
-    override suspend fun getAllShoesPaginated(page: Int, pageSize: Int): BaseResponse<PaginatedShoes> {
+    override suspend fun getAllShoesPaginated(page: Int, pageSize: Int, userId: Int?): BaseResponse<PaginatedShoes> {
         return try {
-            val paginatedShoes = shoeDao.getAllShoesPaginated(page, pageSize)
+            val paginatedShoes = shoeDao.getAllShoesPaginated(page, pageSize, userId)
             BaseResponse.SuccessResponse(data = paginatedShoes)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
         }
     }
 
-    override suspend fun filterShoesByBrand(brand: String): BaseResponse<List<Shoe>> {
+    override suspend fun filterShoesByBrand(brand: String, userId: Int?): BaseResponse<List<Shoe>> {
         return try {
-            val shoes = shoeDao.filterShoesByBrand(brand)
+            val shoes = shoeDao.filterShoesByBrand(brand, userId)
             BaseResponse.SuccessResponse(shoes)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
         }
     }
 
-    override suspend fun filterShoesByCategory(category: String): BaseResponse<List<Shoe>> {
+    override suspend fun filterShoesByCategory(category: String, userId: Int?): BaseResponse<List<Shoe>> {
         return try {
-            val shoes = shoeDao.filterShoesByCategory(category)
+            val shoes = shoeDao.filterShoesByCategory(category, userId)
             BaseResponse.SuccessResponse(shoes)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
@@ -85,7 +85,7 @@ class ShoeRepositoryImpl(
 
     override suspend fun deleteShoe(id: Int): BaseResponse<Shoe> {
         return try {
-            val shoe = shoeDao.getShoeById(id)
+            val shoe = shoeDao.getShoeById(id, null)
             val isDeleted = shoeDao.deleteShoe(id)
             if (isDeleted) {
                 BaseResponse.SuccessResponse(data = shoe)

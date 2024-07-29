@@ -1,6 +1,7 @@
 package com.robert.db.dao.shoe
 
 import com.robert.db.DatabaseFactory.dbQuery
+import com.robert.db.dao.wish_list.WishListDao
 import com.robert.db.tables.shoe.*
 import com.robert.models.Brand
 import com.robert.models.PaginatedShoes
@@ -10,7 +11,7 @@ import com.robert.request.ShoeRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class ShoeDaoImpl: ShoeDao {
+class ShoeDaoImpl(private val wishListDao: WishListDao): ShoeDao {
 
     override fun resultRowToShoe(row: ResultRow): Shoe {
         val shoeId = row[ShoesTable.id]
@@ -40,7 +41,8 @@ class ShoeDaoImpl: ShoeDao {
                         id = it[BrandsTable.id],
                         name = it[BrandsTable.name],
                         description = it[BrandsTable.description],
-                        logoUrl = it[BrandsTable.logoUrl]
+                        logoUrl = it[BrandsTable.logoUrl],
+                        shoes = ShoesTable.select { ShoesTable.brandId eq brandId }.count().toInt()
                     )
                 }
                 .singleOrNull()
@@ -103,51 +105,74 @@ class ShoeDaoImpl: ShoeDao {
 
         ShoesTable
             .select { ShoesTable.id eq shoeId }
-            .map(::resultRowToShoe)
+            .map{resultRowToShoe(it)}
             .singleOrNull()
     }
 
-    override suspend fun searchShoes(query: String): List<Shoe> = dbQuery {
+    override suspend fun searchShoes(query: String, userId: Int?): List<Shoe> = dbQuery {
         val queryLower = query.lowercase()
         ShoesTable
         .select { ShoesTable.name.lowerCase() like "%$queryLower%" }
-            .map(::resultRowToShoe)
+            .map{
+                val shoe = resultRowToShoe(it)
+                shoe.copy(
+                    isInWishList = wishListDao.isShoeInWishlist(userId = userId, shoeId = shoe.id)
+                )
+            }
     }
 
-    override suspend fun getShoeById(id: Int): Shoe = dbQuery {
+    override suspend fun getShoeById(id: Int, userId: Int?): Shoe = dbQuery {
         ShoesTable
             .select { ShoesTable.id eq id }
-            .map(::resultRowToShoe)
+            .map{
+                val shoe = resultRowToShoe(it)
+                shoe.copy(
+                    isInWishList = wishListDao.isShoeInWishlist(userId = userId, shoeId = shoe.id)
+                )
+            }
             .single()
     }
 
-    override suspend fun getAllShoesPaginated(page: Int, pageSize: Int): PaginatedShoes = dbQuery {
+    override suspend fun getAllShoesPaginated(page: Int, pageSize: Int, userId: Int?): PaginatedShoes = dbQuery {
         val offset = (page - 1) * pageSize
         val totalCount = ShoesTable.selectAll().count().toInt()
         val shoes = ShoesTable
             .selectAll()
             .limit(pageSize, offset.toLong())
-            .map(::resultRowToShoe)
+            .map{
+                val shoe = resultRowToShoe(it)
+                shoe.copy(
+                    isInWishList = wishListDao.isShoeInWishlist(userId = userId, shoeId = shoe.id)
+                )
+            }
 
         PaginatedShoes(shoes, totalCount)
     }
 
-    override suspend fun filterShoesByBrand(brand: String): List<Shoe> = dbQuery {
+    override suspend fun filterShoesByBrand(brand: String, userId: Int?): List<Shoe> = dbQuery {
         ShoesTable
             .select { ShoesTable.brandId inSubQuery(
                     BrandsTable
                         .slice(BrandsTable.id)
                         .select { BrandsTable.name eq brand }
                     ) }
-            .map(::resultRowToShoe)
+            .map{
+                val shoe = resultRowToShoe(it)
+                shoe.copy(
+                    isInWishList = wishListDao.isShoeInWishlist(userId = userId, shoeId = shoe.id)
+                )
+            }
     }
 
-    override suspend fun filterShoesByCategory(category: String): List<Shoe> = dbQuery {
+    override suspend fun filterShoesByCategory(category: String, userId: Int?): List<Shoe> = dbQuery {
         ShoesTable
             .leftJoin(CategoriesTable, { categoryId }, { id })
             .select { CategoriesTable.name eq category }
             .map { resultRow ->
-                resultRowToShoe(resultRow)
+                val shoe = resultRowToShoe(resultRow)
+                shoe.copy(
+                    isInWishList = wishListDao.isShoeInWishlist(userId = userId, shoeId = shoe.id)
+                )
             }
     }
 
