@@ -12,11 +12,12 @@ class BrandDaoImpl(
     private val shoeDao: ShoeDao
 ):  BrandDao{
     private fun resultRowToBrand(row: ResultRow): Brand = Brand(
-            id = row[BrandsTable.id],
-            name = row[BrandsTable.name],
-            description = row[BrandsTable.description],
-            logoUrl = row[BrandsTable.logoUrl]
-        )
+        id = row[BrandsTable.id],
+        name = row[BrandsTable.name],
+        description = row[BrandsTable.description],
+        logoUrl = row[BrandsTable.logoUrl],
+        shoes = row.getOrNull(ShoesTable.id.count())?.toInt() ?: 0
+    )
 
     override suspend fun insertBrand(brand: Brand): Brand? = dbQuery {
         val insertStatement = BrandsTable.insert {
@@ -28,7 +29,7 @@ class BrandDaoImpl(
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToBrand)
     }
 
-    override suspend fun searchShoes(brand: String, query: String): List<Shoe> = dbQuery{
+    override suspend fun searchShoes(brand: String, query: String, userId: Int?): List<Shoe> = dbQuery{
         val brandId = BrandsTable
             .select { BrandsTable.name.eq(brand) }
             .map { it[BrandsTable.id] }

@@ -6,6 +6,6 @@ import com.robert.utils.BaseResponse
 
 interface BrandRepository {
     suspend fun insertBrand(brand: Brand): BaseResponse<Brand>
-    suspend fun searchShoes(brand: String, query: String): BaseResponse<List<Shoe>>
+    suspend fun searchShoes(brand: String, query: String, userId:Int?): BaseResponse<List<Shoe>>
     suspend fun getAllBrands(): BaseResponse<List<Brand>>
 }

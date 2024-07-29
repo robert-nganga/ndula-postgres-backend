@@ -26,9 +26,9 @@ class BrandRepositoryImpl(
         }
     }
 
-    override suspend fun searchShoes(brand: String, query: String): BaseResponse<List<Shoe>> {
+    override suspend fun searchShoes(brand: String, query: String, userId: Int?): BaseResponse<List<Shoe>> {
         return  try {
-            val result = brandDao.searchShoes(brand, query)
+            val result = brandDao.searchShoes(brand, query, userId)
             BaseResponse.SuccessResponse(data = result, status = HttpStatusCode.OK)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse(message = "Error fetching shoes", status = HttpStatusCode.InternalServerError)

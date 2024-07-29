@@ -5,6 +5,7 @@ import com.robert.repositories.shoe.BrandRepository
 import com.robert.request.BrandRequest
 import com.robert.response.ErrorResponse
 import com.robert.utils.BaseResponse
+import com.robert.utils.getUserIdFromAuthToken
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -50,7 +51,11 @@ fun Route.brandRoutes(
             call.respond(HttpStatusCode.BadRequest)
             return@get
         }
-        val result = brandRepository.searchShoes(brand, query)
+        val userId = getUserIdFromAuthToken() ?: kotlin.run {
+            call.respond(HttpStatusCode.Unauthorized)
+            return@get
+        }
+        val result = brandRepository.searchShoes(brand, query, userId)
         when(result){
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
