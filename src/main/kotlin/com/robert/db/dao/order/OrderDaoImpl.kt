@@ -23,7 +23,7 @@ class OrderDaoImpl(
         val orderItems = OrderItemsTable
             .select { OrderItemsTable.orderId eq orderId }
             .map { itemRow ->
-                val shoe = shoeDao.getShoeById(itemRow[OrderItemsTable.shoeId])
+                val shoe = shoeDao.getShoeById(itemRow[OrderItemsTable.shoeId], null)
                 OrderItem(
                     id = itemRow[OrderItemsTable.id],
                     orderId = orderId,

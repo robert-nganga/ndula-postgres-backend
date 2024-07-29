@@ -1,6 +1,5 @@
 package com.robert.routes
 
-import com.robert.db.dao.category.CategoryDao
 import com.robert.models.Category
 import com.robert.repositories.shoe.CategoryRepository
 import com.robert.request.CategoryRequest

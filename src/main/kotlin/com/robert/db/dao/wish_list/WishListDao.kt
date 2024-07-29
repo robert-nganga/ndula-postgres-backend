@@ -7,5 +7,5 @@ interface WishListDao {
     suspend fun addItemToWishlist(userId: Int, shoeId: Int): WishList
     suspend fun removeItemFromWishlist(userId: Int, shoeId: Int): WishList
     suspend fun clearWishlist(userId: Int): WishList
-    suspend fun isShoeInWishlist(userId: Int, shoeId: Int): Boolean
+    suspend fun isShoeInWishlist(userId: Int?, shoeId: Int): Boolean
 }

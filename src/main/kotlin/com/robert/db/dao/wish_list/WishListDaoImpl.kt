@@ -1,16 +1,15 @@
 package com.robert.db.dao.wish_list
 
 import com.robert.db.DatabaseFactory.dbQuery
-import com.robert.db.dao.shoe.ShoeDao
+import com.robert.db.tables.shoe.*
 import com.robert.db.tables.wish_list.WishListItemsTable
 import com.robert.db.tables.wish_list.WishListTable
-import com.robert.models.WishList
-import com.robert.models.WishListItem
+import com.robert.models.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 
-class WishListDaoImpl(private val shoeDao: ShoeDao) : WishListDao {
+class WishListDaoImpl : WishListDao {
 
     override suspend fun getWishlistByUserId(userId: Int): WishList = dbQuery {
         val wishlistId = WishListTable.select { WishListTable.userId eq userId }
@@ -20,10 +19,11 @@ class WishListDaoImpl(private val shoeDao: ShoeDao) : WishListDao {
         val items = WishListItemsTable
             .select { WishListItemsTable.wishlistId eq wishlistId }
             .map { row ->
-                val shoe = shoeDao.getShoeById(row[WishListItemsTable.shoeId])
                 WishListItem(
                     id = row[WishListItemsTable.id],
-                    shoe = shoe,
+                    shoe = ShoesTable.select { ShoesTable.id eq row[WishListItemsTable.shoeId] }
+                        .map(::resultRowToShoe)
+                        .single(),
                     createdAt = row[WishListItemsTable.createdAt].toString()
                 )
             }
@@ -47,32 +47,118 @@ class WishListDaoImpl(private val shoeDao: ShoeDao) : WishListDao {
     }
 
     override suspend fun addItemToWishlist(userId: Int, shoeId: Int): WishList = dbQuery {
-        val wishlistId = getWishlistByUserId(userId).id
+        // Get or create wishlist in a single operation
+        val wishlistId = WishListTable
+            .slice(WishListTable.id)
+            .select { WishListTable.userId eq userId }
+            .singleOrNull()?.get(WishListTable.id) ?: (WishListTable.insert {
+            it[WishListTable.userId] = userId
+        } get WishListTable.id)
+
+        // Insert new item and update timestamp in a single transaction
         WishListItemsTable.insert {
             it[WishListItemsTable.wishlistId] = wishlistId
             it[WishListItemsTable.shoeId] = shoeId
         }
-        setUpdatedAt(wishlistId)
-        getWishlistByUserId(userId)
+
+        WishListTable.update({ WishListTable.id eq wishlistId }) {
+            it[updatedAt] = CurrentDateTime
+        }
+
+        // Fetch the updated wishlist
+        val items = WishListItemsTable
+            .select { WishListItemsTable.wishlistId eq wishlistId }
+            .map { row ->
+                WishListItem(
+                    id = row[WishListItemsTable.id],
+                    shoe = ShoesTable.select { ShoesTable.id eq row[WishListItemsTable.shoeId] }
+                        .map(::resultRowToShoe)
+                        .single(),
+                    createdAt = row[WishListItemsTable.createdAt].toString()
+                )
+            }
+
+        WishList(
+            id = wishlistId,
+            items = items,
+            createdAt = WishListTable.slice(WishListTable.createdAt)
+                .select { WishListTable.id eq wishlistId }
+                .single()[WishListTable.createdAt].toString(),
+            updatedAt = WishListTable.slice(WishListTable.updatedAt)
+                .select { WishListTable.id eq wishlistId }
+                .single()[WishListTable.updatedAt].toString(),
+        )
     }
 
     override suspend fun removeItemFromWishlist(userId: Int, shoeId: Int): WishList = dbQuery {
-        val wishlistId = getWishlistByUserId(userId).id
+        val wishlistId = WishListTable.select { WishListTable.userId eq userId }
+            .map { it[WishListTable.id] }
+            .singleOrNull() ?: createWishlist(userId)
+
         WishListItemsTable.deleteWhere {
             (WishListItemsTable.wishlistId eq wishlistId) and (WishListItemsTable.shoeId eq shoeId)
         }
-        setUpdatedAt(wishlistId)
-        getWishlistByUserId(userId)
+        WishListTable.update({ WishListTable.id eq wishlistId }) {
+            it[updatedAt] = CurrentDateTime
+        }
+        // Fetch the updated wishlist
+        val items = WishListItemsTable
+            .select { WishListItemsTable.wishlistId eq wishlistId }
+            .map { row ->
+                WishListItem(
+                    id = row[WishListItemsTable.id],
+                    shoe = ShoesTable.select { ShoesTable.id eq row[WishListItemsTable.shoeId] }
+                        .map(::resultRowToShoe)
+                        .single(),
+                    createdAt = row[WishListItemsTable.createdAt].toString()
+                )
+            }
+        WishList(
+            id = wishlistId,
+            items = items,
+            createdAt = WishListTable.slice(WishListTable.createdAt)
+                .select { WishListTable.id eq wishlistId }
+                .single()[WishListTable.createdAt].toString(),
+            updatedAt = WishListTable.slice(WishListTable.updatedAt)
+                .select { WishListTable.id eq wishlistId }
+                .single()[WishListTable.updatedAt].toString(),
+        )
     }
 
     override suspend fun clearWishlist(userId: Int): WishList = dbQuery {
-        val wishlistId = getWishlistByUserId(userId).id
+        val wishlistId = WishListTable.select { WishListTable.userId eq userId }
+            .map { it[WishListTable.id] }
+            .singleOrNull() ?: createWishlist(userId)
         WishListItemsTable.deleteWhere { WishListItemsTable.wishlistId eq wishlistId }
-        setUpdatedAt(wishlistId)
-        getWishlistByUserId(userId)
+        WishListTable.update({ WishListTable.id eq wishlistId }) {
+            it[updatedAt] = CurrentDateTime
+        }
+        // Fetch the updated wishlist
+        val items = WishListItemsTable
+            .select { WishListItemsTable.wishlistId eq wishlistId }
+            .map { row ->
+                WishListItem(
+                    id = row[WishListItemsTable.id],
+                    shoe = ShoesTable.select { ShoesTable.id eq row[WishListItemsTable.shoeId] }
+                        .map(::resultRowToShoe)
+                        .single(),
+                    createdAt = row[WishListItemsTable.createdAt].toString()
+                )
+            }
+        WishList(
+            id = wishlistId,
+            items = items,
+            createdAt = WishListTable.slice(WishListTable.createdAt)
+                .select { WishListTable.id eq wishlistId }
+                .single()[WishListTable.createdAt].toString(),
+            updatedAt = WishListTable.slice(WishListTable.updatedAt)
+                .select { WishListTable.id eq wishlistId }
+                .single()[WishListTable.updatedAt].toString(),
+        )
     }
 
-    override suspend fun isShoeInWishlist(userId: Int, shoeId: Int): Boolean = dbQuery {
+    override suspend fun isShoeInWishlist(userId: Int?, shoeId: Int): Boolean = dbQuery {
+        if (userId == null) return@dbQuery false
         val wishlistId = WishListTable
             .select { WishListTable.userId eq userId }
             .map { it[WishListTable.id] }
@@ -86,9 +172,52 @@ class WishListDaoImpl(private val shoeDao: ShoeDao) : WishListDao {
             .count() > 0
     }
 
-    private suspend fun setUpdatedAt(wishListId: Int) = dbQuery {
-        WishListTable.update({ WishListTable.id eq wishListId }) {
-            it[updatedAt] = CurrentDateTime
-        }
+
+    private fun resultRowToShoe(row: ResultRow): Shoe {
+        val images = ShoeImagesTable
+            .select{ ShoeImagesTable.productId eq row[ShoesTable.id] }
+            .map{ it[ShoeImagesTable.imageUrl] }
+
+        val variants = ShoeVariationsTable
+            .select{ ShoeVariationsTable.productId eq row[ShoesTable.id] }
+            .map {
+                ShoeVariant(
+                    id = it[ShoeVariationsTable.id],
+                    size = it[ShoeVariationsTable.size],
+                    quantity = it[ShoeVariationsTable.quantity],
+                    color = it[ShoeVariationsTable.color],
+                    price = it[ShoeVariationsTable.price],
+                    image = it[ShoeVariationsTable.image]
+                )
+            }
+        return Shoe(
+            id = row[ShoesTable.id],
+            name = row[ShoesTable.name],
+            price = row[ShoesTable.price].toDouble(),
+            productType = row[ShoesTable.productType],
+            description = row[ShoesTable.description],
+            variants = variants,
+            images = images,
+            brand = row[ShoesTable.brandId]?.let { brandId ->
+                BrandsTable
+                    .select { BrandsTable.id eq brandId }
+                    .map {
+                        Brand(
+                            id = it[BrandsTable.id],
+                            name = it[BrandsTable.name],
+                            description = it[BrandsTable.description],
+                            logoUrl = it[BrandsTable.logoUrl],
+                            shoes = ShoesTable.select { ShoesTable.brandId eq brandId }.count().toInt()
+                        )
+                    }
+                    .singleOrNull()
+            },
+            category = CategoriesTable
+                .select{ CategoriesTable.id eq row[ShoesTable.categoryId] }
+                .map { it[CategoriesTable.name] }
+                .single(),
+            createdAt = row[ShoesTable.createdAt].toString(),
+            isInWishList = true
+        )
     }
 }

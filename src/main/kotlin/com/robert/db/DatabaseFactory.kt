@@ -6,6 +6,8 @@ import com.robert.db.tables.order.OrderItemsTable
 import com.robert.db.tables.order.OrdersTable
 import com.robert.db.tables.shoe.*
 import com.robert.db.tables.user.UsersTable
+import com.robert.db.tables.wish_list.WishListItemsTable
+import com.robert.db.tables.wish_list.WishListTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +37,8 @@ object DatabaseFactory {
             SchemaUtils.create(CartItemsTable)
             SchemaUtils.create(OrdersTable)
             SchemaUtils.create(OrderItemsTable)
+            SchemaUtils.create(WishListTable)
+            SchemaUtils.create(WishListItemsTable)
         }
     }
 

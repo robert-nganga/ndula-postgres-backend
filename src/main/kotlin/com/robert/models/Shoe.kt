@@ -12,5 +12,6 @@ data class Shoe(
     val brand: Brand?,
     val images:  List<String>,
     val variants: List<ShoeVariant>,
-    val createdAt: String
+    val createdAt: String,
+    val isInWishList: Boolean = false
 )

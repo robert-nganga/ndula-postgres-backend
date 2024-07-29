@@ -44,12 +44,12 @@ fun Application.module() = runBlocking {
     val tokenService = JwtTokenService()
     val hashingService = SHA256HashingService()
     val categoryDao = CategoryDaoImpl()
-    val shoeDao = ShoeDaoImpl()
+    val wishListDao= WishListDaoImpl()
+    val shoeDao = ShoeDaoImpl(wishListDao = wishListDao)
     val brandDao = BrandDaoImpl(shoeDao = shoeDao)
     val cartDao = CartDaoImpl(shoeDao = shoeDao)
     val userDao = UserDaoImpl(shoeDao = shoeDao)
     val orderDao = OrderDaoImpl(shoeDao = shoeDao)
-    val wishListDao= WishListDaoImpl(shoeDao = shoeDao)
     val userRepository = UserRepositoryImpl(
         userDao = userDao,
         tokenService = tokenService,

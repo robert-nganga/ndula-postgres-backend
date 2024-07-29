@@ -17,8 +17,14 @@ class WishListRepositoryImpl(private val wishlistDao: WishListDao) : WishListRep
 
     override suspend fun addItemToWishlist(userId: Int, shoeId: Int): BaseResponse<WishList> {
         return try {
-            val wishlist = wishlistDao.addItemToWishlist(userId, shoeId)
-            BaseResponse.SuccessResponse(data = wishlist, status = HttpStatusCode.Created)
+            val isItemInWishList = wishlistDao.isShoeInWishlist(userId, shoeId)
+            if (isItemInWishList){
+                BaseResponse.ErrorResponse("Item already exists in wishlist", HttpStatusCode.Conflict)
+            } else {
+                val wishlist = wishlistDao.addItemToWishlist(userId, shoeId)
+                BaseResponse.SuccessResponse(data = wishlist, status = HttpStatusCode.Created)
+            }
+
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
         }
