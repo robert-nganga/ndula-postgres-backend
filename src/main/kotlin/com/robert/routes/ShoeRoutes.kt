@@ -99,6 +99,4 @@ fun Route.shoeRoutes(
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }
     }
-
-    
 }

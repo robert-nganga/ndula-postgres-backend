@@ -69,7 +69,7 @@ class CartDaoImpl(
                 quantity = resultRow[CartItemsTable.quantity]
             )
         } ?: throw Exception("Insert failed")
-        updateCart(cartId)
+        setUpdatedAt(cartId)
         val cart = getCartById(cartId)
         cart.copy(
             items = if (!cart.items.contains(insertedItem)) cart.items + insertedItem else cart.items
@@ -80,7 +80,7 @@ class CartDaoImpl(
         CartItemsTable.update({ CartItemsTable.id eq cartItemId }) {
             it[quantity] = newQuantity
         }
-        updateCart(cartId)
+        setUpdatedAt(cartId)
         val cart = getCartById(cartId)
         cart.copy(
             items = cart.items.map { item ->
@@ -95,7 +95,7 @@ class CartDaoImpl(
 
     override suspend fun removeItemFromCart(cartId: Int, cartItemId: Int): Cart = dbQuery {
         CartItemsTable.deleteWhere { id eq cartItemId }
-        updateCart(cartId)
+        setUpdatedAt(cartId)
         val cart = getCartById(cartId)
         cart.copy(
             items = cart.items.filter { it.id != cartItemId }
@@ -104,14 +104,14 @@ class CartDaoImpl(
 
     override suspend fun clearCart(cartId: Int): Cart = dbQuery {
         CartItemsTable.deleteWhere { CartItemsTable.cartId eq cartId }
-        updateCart(cartId)
+        setUpdatedAt(cartId)
         val cart = getCartById(cartId)
         cart.copy(
             items = emptyList()
         )
     }
 
-    private suspend fun updateCart(cartId: Int) = dbQuery {
+    private suspend fun setUpdatedAt(cartId: Int) = dbQuery {
         CartTable.update({ CartTable.id eq cartId }) {
             it[updatedAt] = CurrentDateTime
         }

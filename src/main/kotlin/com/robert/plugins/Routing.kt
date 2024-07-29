@@ -1,7 +1,5 @@
 package com.robert.plugins
 
-import com.robert.db.dao.order.OrderDao
-import com.robert.db.dao.shoe.ShoeDao
 import com.robert.repositories.cart.CartRepository
 import com.robert.repositories.images.ImageRepository
 import com.robert.repositories.order.OrderRepository
@@ -9,6 +7,8 @@ import com.robert.repositories.shoe.BrandRepository
 import com.robert.repositories.shoe.CategoryRepository
 import com.robert.repositories.shoe.ShoeRepository
 import com.robert.repositories.user.UserRepository
+import com.robert.repositories.wish_list.WishListRepository
+import com.robert.repositories.wish_list.WishListRepositoryImpl
 import com.robert.routes.*
 import com.robert.security.hashing.HashingService
 import io.ktor.http.*
@@ -25,7 +25,8 @@ fun Application.configureRouting(
     shoeRepository: ShoeRepository,
     cartRepository: CartRepository,
     orderRepository: OrderRepository,
-    imageRepository: ImageRepository
+    imageRepository: ImageRepository,
+    wishListRepository: WishListRepository
 ) {
     routing {
         get("/") {
@@ -62,6 +63,9 @@ fun Application.configureRouting(
             }
             route("/images") {
                 imageRoutes(imageRepository)
+            }
+            route("/wishlist"){
+                wishlistRoutes(wishListRepository)
             }
         }
     }
