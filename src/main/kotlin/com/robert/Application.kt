@@ -1,5 +1,6 @@
 package com.robert
 
+import com.google.maps.GeoApiContext
 import com.robert.aws.S3ClientFactory
 import com.robert.db.DatabaseFactory
 import com.robert.db.dao.brand.BrandDaoImpl
@@ -9,6 +10,7 @@ import com.robert.db.dao.order.OrderDaoImpl
 import com.robert.db.dao.shoe.ShoeDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
 import com.robert.db.dao.wish_list.WishListDaoImpl
+import com.robert.location_services.LocationServiceImpl
 import com.robert.plugins.configureMonitoring
 import com.robert.plugins.configureRouting
 import com.robert.plugins.configureSecurity
@@ -33,6 +35,15 @@ fun main(args: Array<String>) {
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() = runBlocking {
+
+    val geoContext = GeoApiContext.Builder()
+        .apiKey(System.getenv("GOOGLE_API_KEY"))
+        .build()
+
+    environment.monitor.subscribe(ApplicationStopped){
+        geoContext.shutdown()
+    }
+
     DatabaseFactory.init()
     val s3Client = S3ClientFactory.init()
     val tokenConfig = TokenConfig(
@@ -49,7 +60,7 @@ fun Application.module() = runBlocking {
     val brandDao = BrandDaoImpl(shoeDao = shoeDao)
     val cartDao = CartDaoImpl(shoeDao = shoeDao)
     val userDao = UserDaoImpl(shoeDao = shoeDao)
-    val orderDao = OrderDaoImpl(shoeDao = shoeDao)
+    val orderDao = OrderDaoImpl()
     val userRepository = UserRepositoryImpl(
         userDao = userDao,
         tokenService = tokenService,
@@ -57,6 +68,7 @@ fun Application.module() = runBlocking {
         hashingService = hashingService
     )
     val imageRepository = ImageRepositoryImpl(s3Client = s3Client)
+    val locationService = LocationServiceImpl(geoContext)
 
     configureSerialization()
     configureMonitoring()
@@ -72,6 +84,7 @@ fun Application.module() = runBlocking {
         cartRepository = CartRepositoryImpl(cartDao = cartDao),
         orderRepository = OrderRepositoryImpl(orderDao = orderDao),
         imageRepository = imageRepository,
-        wishListRepository = WishListRepositoryImpl(wishListDao)
+        wishListRepository = WishListRepositoryImpl(wishListDao),
+        locationService = locationService
     )
 }
