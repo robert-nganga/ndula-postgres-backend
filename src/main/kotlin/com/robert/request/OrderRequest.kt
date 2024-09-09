@@ -1,8 +1,11 @@
 package com.robert.request
 
+import com.robert.models.OrderStatus
+import com.robert.models.ShippingAddress
+
 data class OrderRequest(
-    val userId: Int,
     val items: List<OrderItemRequest>,
-    val total: Double,
-    val status: String,
+    val totalAmount: Double,
+    val status: OrderStatus,
+    val shippingAddress: ShippingAddress,
 )

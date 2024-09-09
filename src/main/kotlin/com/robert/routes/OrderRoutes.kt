@@ -1,11 +1,10 @@
 package com.robert.routes
 
-import com.robert.db.dao.order.OrderDao
 import com.robert.repositories.order.OrderRepository
 import com.robert.request.OrderRequest
-import com.robert.request.UpdateOrderStatusRequest
 import com.robert.response.ErrorResponse
 import com.robert.utils.BaseResponse
+import com.robert.utils.getUserIdFromAuthToken
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -18,56 +17,58 @@ fun Route.orderRoutes(
 ) {
 
     post("/add") {
-        val request = call.receiveNullable<OrderRequest>() ?: kotlin.run {
+        val order = call.receiveNullable<OrderRequest>() ?: kotlin.run {
             call.respond(
                 HttpStatusCode.BadRequest,
-                ErrorResponse("Invalid request", "", HttpStatusCode.BadRequest.value)
+                ErrorResponse("Bad request", "", HttpStatusCode.BadRequest.value)
             )
             return@post
         }
+        val userId = getUserIdFromAuthToken()
+            ?: return@post call.respond(HttpStatusCode.Unauthorized)
 
-        val result = orderRepository.createOrder(request)
-        when(result){
+        when (val result = orderRepository.createOrder(order, userId)) {
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
-            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+            is BaseResponse.ErrorResponse ->  call.respond(result.status, result)
         }
-        return@post
     }
 
-    post("/update") {
-        val request = call.receiveNullable<UpdateOrderStatusRequest>() ?: kotlin.run {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                ErrorResponse("Invalid request", "", HttpStatusCode.BadRequest.value)
-            )
-            return@post
-        }
+    get("/all"){
+        val userId = getUserIdFromAuthToken()
+            ?: return@get call.respond(HttpStatusCode.Unauthorized)
 
-        val result = orderRepository.updateOrderStatus(orderId = request.orderId, newStatus = request.status)
-        when(result){
+        when (val result = orderRepository.getOrdersForUser(userId)) {
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }
-        return@post
     }
 
-    get("/all/{id}"){
-        val userId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-        val result = orderRepository.getAllOrdersForUser(userId)
-        when(result){
+    get("/active"){
+        val userId = getUserIdFromAuthToken()
+            ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+        when (val result = orderRepository.getActiveOrders(userId)) {
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }
-        return@get
+    }
+
+    get("/completed"){
+        val userId = getUserIdFromAuthToken()
+            ?: return@get call.respond(HttpStatusCode.Unauthorized)
+
+        when (val result = orderRepository.getCompletedOrders(userId)) {
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
+        }
     }
 
     get("/{id}"){
-        val orderId = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-        val result = orderRepository.getOrderById(orderId)
-        when(result){
+        val id = call.parameters["id"]?.toIntOrNull() ?:
+            return@get call.respond(HttpStatusCode.BadRequest)
+        when (val result = orderRepository.getOrderById(id)) {
             is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
             is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }
-        return@get
     }
 }
