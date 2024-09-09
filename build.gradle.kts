@@ -12,6 +12,7 @@ plugins {
     kotlin("jvm") version "1.9.23"
     id("io.ktor.plugin") version "2.3.10"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.robert"
@@ -21,6 +22,22 @@ application {
     mainClass.set("io.ktor.server.netty.EngineMain")
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+ktor {
+    fatJar {
+        archiveFileName.set("ndula.jar")
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11)) // or 22, whichever you prefer
+    }
+}
+
+// Set the target JVM version for Kotlin
+kotlin {
+    jvmToolchain(11) // or 22 to match the Java version
 }
 
 repositories {
@@ -47,6 +64,10 @@ dependencies {
     implementation("org.ehcache:ehcache:$ehcache_version")
     implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
     implementation("aws.sdk.kotlin:s3:1.0.0")
+
+    // Google Maps services
+    implementation("com.google.maps:google-maps-services:2.2.0")
+    implementation("org.slf4j:slf4j-simple:1.7.25")
 
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
