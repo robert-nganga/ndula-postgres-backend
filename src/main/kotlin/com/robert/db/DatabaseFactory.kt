@@ -4,6 +4,7 @@ import com.robert.db.tables.cart.CartItemsTable
 import com.robert.db.tables.cart.CartTable
 import com.robert.db.tables.order.OrderItemsTable
 import com.robert.db.tables.order.OrdersTable
+import com.robert.db.tables.order.ShippingAddressesTable
 import com.robert.db.tables.shoe.*
 import com.robert.db.tables.user.UsersTable
 import com.robert.db.tables.wish_list.WishListItemsTable
@@ -23,6 +24,7 @@ object DatabaseFactory {
     private  val user = System.getenv("JDBC_DATABASE_USERNAME")
     private  val password = System.getenv("JDBC_DATABASE_PASSWORD")
 
+    private const val NEON_DB_URL = "jdbc:postgresql://ep-super-rice-a2zizsat.eu-central-1.aws.neon.tech/nduladb?user=nduladb_owner&password=rp8Jiwhtn7ZH&sslmode=require"
 
     fun init() {
         Database.connect(createHikariDataSource())
@@ -39,6 +41,7 @@ object DatabaseFactory {
             SchemaUtils.create(OrderItemsTable)
             SchemaUtils.create(WishListTable)
             SchemaUtils.create(WishListItemsTable)
+            SchemaUtils.create(ShippingAddressesTable)
         }
     }
 
@@ -54,6 +57,14 @@ object DatabaseFactory {
         config.validate()
         return HikariDataSource(config)
     }
+
+//    val config = HikariConfig()
+//    config.driverClassName = "org.postgresql.Driver"
+//    config.jdbcUrl = NEON_DB_URL
+//    config.maximumPoolSize = 3
+//    config.isAutoCommit = false
+//    config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+//    config.validate()
 
     suspend fun <T> dbQuery(block: suspend  () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
