@@ -9,8 +9,6 @@ This is the backend for an eCommerce application built with the Ktor framework i
 - **PostgreSQL**: Database for storing persistent data.
 - **JWT Authentication**: Secure authentication for protected routes.
 - **AWS S3**: Image storage for product images.
-- **Docker**: Containerization for deployment.
-- **Swagger/OpenAPI**: API documentation (assuming Swagger is integrated).
 
 ## Project Structure
 
