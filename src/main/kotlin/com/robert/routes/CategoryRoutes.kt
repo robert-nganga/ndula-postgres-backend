@@ -26,6 +26,7 @@ fun Route.categoryRoutes(
             id = 0,
             name = request.name,
             description = request.description,
+            image = request.image
         )
         val result = categoryRepository.insertCategory(requestData)
         when(result) {

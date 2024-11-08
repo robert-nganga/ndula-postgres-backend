@@ -13,7 +13,8 @@ class CategoryDaoImpl: CategoryDao {
     private fun resultRowToCategory(row: ResultRow): Category = Category(
         id = row[CategoriesTable.id],
         name = row[CategoriesTable.name],
-        description = row[CategoriesTable.description]
+        description = row[CategoriesTable.description],
+        image = row[CategoriesTable.image]
     )
     override suspend fun getCategoryId(name: String): Int? = dbQuery {
         CategoriesTable
@@ -26,6 +27,7 @@ class CategoryDaoImpl: CategoryDao {
         val insertStatement = CategoriesTable.insert {
             it[name] = category.name
             it[description] = category.description
+            it[image] = category.image
         }
 
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToCategory)
