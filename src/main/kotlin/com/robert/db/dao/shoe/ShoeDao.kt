@@ -2,6 +2,7 @@ package com.robert.db.dao.shoe
 
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
+import com.robert.models.ShoeFilterOptions
 import com.robert.request.ShoeRequest
 import org.jetbrains.exposed.sql.ResultRow
 
@@ -15,6 +16,8 @@ interface ShoeDao {
     suspend fun getShoeById(id: Int, userId: Int?): Shoe
 
     suspend fun getAllShoesPaginated(page: Int, pageSize: Int, userId: Int?): PaginatedShoes
+
+    suspend fun getFilteredAndSortedShoes(filterOptions: ShoeFilterOptions, userId: Int?): PaginatedShoes
 
     suspend fun filterShoesByBrand(brand: String, userId: Int?): List<Shoe>
 

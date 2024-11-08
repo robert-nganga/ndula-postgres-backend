@@ -3,13 +3,11 @@ package com.robert.db.dao.shoe
 import com.robert.db.DatabaseFactory.dbQuery
 import com.robert.db.dao.wish_list.WishListDao
 import com.robert.db.tables.shoe.*
-import com.robert.models.Brand
-import com.robert.models.PaginatedShoes
-import com.robert.models.Shoe
-import com.robert.models.ShoeVariant
+import com.robert.models.*
 import com.robert.request.ShoeRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.util.*
 
 class ShoeDaoImpl(private val wishListDao: WishListDao): ShoeDao {
 
@@ -61,6 +59,8 @@ class ShoeDaoImpl(private val wishListDao: WishListDao): ShoeDao {
             brand = brand,
             images = images,
             variants = variants,
+            totalReviews = row[ShoesTable.totalReviews],
+            averageRating = row[ShoesTable.averageRating].toDouble(),
             createdAt = row[ShoesTable.createdAt].toString()
         )
     }
@@ -149,6 +149,49 @@ class ShoeDaoImpl(private val wishListDao: WishListDao): ShoeDao {
         PaginatedShoes(shoes, totalCount)
     }
 
+    override suspend fun getFilteredAndSortedShoes(filterOptions: ShoeFilterOptions, userId: Int?): PaginatedShoes = dbQuery {
+        val query = ShoesTable.selectAll()
+
+        filterOptions.category?.let { category ->
+            val categoryId = CategoriesTable.select { CategoriesTable.name eq category }.map { it[CategoriesTable.id] }.single()
+            query.andWhere { ShoesTable.categoryId eq categoryId }
+        }
+        filterOptions.brand?.let { brand ->
+            val brandId = BrandsTable.select { BrandsTable.name eq brand }.map { it[BrandsTable.id] }.single()
+            query.andWhere { ShoesTable.brandId eq brandId }
+        }
+        filterOptions.minPrice?.let { query.andWhere { ShoesTable.price greaterEq it.toBigDecimal() } }
+        filterOptions.maxPrice?.let { query.andWhere { ShoesTable.price lessEq it.toBigDecimal() } }
+
+        val orderExpr = when (filterOptions.sortBy.lowercase(Locale.getDefault())) {
+            "price" -> ShoesTable.price
+            "rating" -> ShoesTable.averageRating
+            "recency" -> ShoesTable.createdAt
+            else -> ShoesTable.createdAt
+        }
+
+        query.orderBy(
+            when (filterOptions.sortOrder.lowercase(Locale.getDefault())) {
+                "desc" -> orderExpr to SortOrder.DESC
+                else -> orderExpr to SortOrder.ASC
+            }
+        )
+
+        val totalCount = query.count().toInt()
+        val offset = (filterOptions.page - 1) * filterOptions.pageSize
+
+        val shoes = query
+            .limit(filterOptions.pageSize, offset.toLong())
+            .map { resultRow ->
+                val shoe = resultRowToShoe(resultRow)
+                shoe.copy(
+                    isInWishList = wishListDao.isShoeInWishlist(userId = userId, shoeId = shoe.id)
+                )
+            }
+
+        PaginatedShoes(shoes, totalCount)
+    }
+
     override suspend fun filterShoesByBrand(brand: String, userId: Int?): List<Shoe> = dbQuery {
         ShoesTable
             .select { ShoesTable.brandId inSubQuery(
@@ -205,9 +248,9 @@ class ShoeDaoImpl(private val wishListDao: WishListDao): ShoeDao {
             }
 
             // Update shoe variants
-            ShoeVariationsTable.deleteWhere { productId eq shoe.id }
+            //ShoeVariationsTable.deleteWhere { productId eq shoe.id }
             shoe.variants.forEach { shoeVariant ->
-                ShoeVariationsTable.insert {
+                ShoeVariationsTable.update({ShoeVariationsTable.id eq shoeVariant.id}) {
                     it[productId] = shoe.id
                     it[image] = shoeVariant.image
                     it[size] = shoeVariant.size

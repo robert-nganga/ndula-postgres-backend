@@ -2,6 +2,7 @@ package com.robert.repositories.shoe
 
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
+import com.robert.models.ShoeFilterOptions
 import com.robert.request.ShoeRequest
 import com.robert.utils.BaseResponse
 
@@ -14,6 +15,8 @@ interface ShoeRepository {
     suspend fun searchShoes(query: String, userId: Int?): BaseResponse<List<Shoe>>
 
     suspend fun getAllShoesPaginated(page: Int, pageSize: Int, userId: Int?): BaseResponse<PaginatedShoes>
+
+    suspend fun getFilteredAndSortedShoes(filterOptions: ShoeFilterOptions, userId: Int?): BaseResponse<PaginatedShoes>
 
     suspend fun filterShoesByBrand(brand: String, userId: Int?): BaseResponse<List<Shoe>>
 

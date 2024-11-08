@@ -3,6 +3,7 @@ package com.robert.repositories.shoe
 import com.robert.db.dao.shoe.ShoeDao
 import com.robert.models.PaginatedShoes
 import com.robert.models.Shoe
+import com.robert.models.ShoeFilterOptions
 import com.robert.request.ShoeRequest
 import com.robert.utils.BaseResponse
 import io.ktor.http.*
@@ -45,6 +46,18 @@ class ShoeRepositoryImpl(
     override suspend fun getAllShoesPaginated(page: Int, pageSize: Int, userId: Int?): BaseResponse<PaginatedShoes> {
         return try {
             val paginatedShoes = shoeDao.getAllShoesPaginated(page, pageSize, userId)
+            BaseResponse.SuccessResponse(data = paginatedShoes)
+        } catch (e: Exception) {
+            BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)
+        }
+    }
+
+    override suspend fun getFilteredAndSortedShoes(
+        filterOptions: ShoeFilterOptions,
+        userId: Int?
+    ): BaseResponse<PaginatedShoes> {
+        return try {
+            val paginatedShoes = shoeDao.getFilteredAndSortedShoes(filterOptions, userId)
             BaseResponse.SuccessResponse(data = paginatedShoes)
         } catch (e: Exception) {
             BaseResponse.ErrorResponse("An error occurred: ${e.message}", HttpStatusCode.InternalServerError)

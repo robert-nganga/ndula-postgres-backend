@@ -1,6 +1,7 @@
 package com.robert.routes
 
 import com.robert.models.Shoe
+import com.robert.models.ShoeFilterOptions
 import com.robert.repositories.shoe.ShoeRepository
 import com.robert.request.ShoeRequest
 import com.robert.response.ErrorResponse
@@ -11,6 +12,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.util.*
 
 fun Route.shoeRoutes(
     shoeRepository: ShoeRepository,
@@ -36,6 +38,25 @@ fun Route.shoeRoutes(
         when(val results = shoeRepository.getAllShoesPaginated(page, pageSize, userId)){
             is BaseResponse.SuccessResponse -> call.respond(results.status, results.data!!)
             is BaseResponse.ErrorResponse -> call.respond(results.status, results)
+        }
+    }
+
+    get("/filter") {
+        val filterOptions = ShoeFilterOptions(
+            category = call.request.queryParameters["category"],
+            brand = call.request.queryParameters["brand"],
+            minPrice = call.request.queryParameters["minPrice"]?.toDoubleOrNull(),
+            maxPrice = call.request.queryParameters["maxPrice"]?.toDoubleOrNull(),
+            sortBy = call.request.queryParameters["sortBy"] ?: "price",
+            sortOrder = call.request.queryParameters["sortOrder"]?.lowercase(Locale.getDefault()) ?: "asc",
+            page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1,
+            pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 15
+        )
+        val userId = getUserIdFromAuthToken()
+
+        when (val result = shoeRepository.getFilteredAndSortedShoes(filterOptions, userId)) {
+            is BaseResponse.SuccessResponse -> call.respond(result.status, result.data!!)
+            is BaseResponse.ErrorResponse -> call.respond(result.status, result)
         }
     }
 
