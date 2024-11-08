@@ -20,13 +20,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
 
-    private  val jdbcUrl = System.getenv("JDBC_DATABASE_URL")
-    private  val driver = System.getenv("JDBC_DATABASE_DRIVER")
-    private  val user = System.getenv("JDBC_DATABASE_USERNAME")
+    private  val jdbcUrl = "jdbc:postgresql://localhost:5432/shoesdb"
+    private  val driver = "org.postgresql.Driver"
+    private  val user = "postgres"
     private  val password = System.getenv("DATABASE_PASSWORD")
-    private val neon_password = System.getenv("NEON_PASSWORD")
 
-    private val NEON_DB_URL = "jdbc:postgresql://ep-winter-truth-a1b3ha4q.ap-southeast-1.aws.neon.tech/nduladb?user=nduladb_owner&password=$neon_password&sslmode=require"
 
     fun init() {
         Database.connect(createHikariDataSource())
@@ -50,13 +48,13 @@ object DatabaseFactory {
 
     private fun createHikariDataSource(): HikariDataSource {
         val config = HikariConfig()
-        config.driverClassName = "org.postgresql.Driver"
-        config.jdbcUrl = "jdbc:postgresql://localhost:5432/shoesdb"
+        config.driverClassName = driver
+        config.jdbcUrl = jdbcUrl
         config.maximumPoolSize = 3
         config.isAutoCommit = false
         config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         config.password = password
-        config.username = "postgres"
+        config.username = user
         config.validate()
         return HikariDataSource(config)
     }
