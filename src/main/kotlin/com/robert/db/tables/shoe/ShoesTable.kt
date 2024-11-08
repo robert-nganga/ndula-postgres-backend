@@ -13,6 +13,8 @@ object ShoesTable: Table() {
     val categoryId = reference("category_id", CategoriesTable.id)
     val brandId = reference("brand_id", BrandsTable.id).nullable()
     val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
+    val averageRating = decimal("average_rating", precision = 3, scale = 2).default(0.toBigDecimal())
+    val totalReviews = integer("total_reviews").default(0)
 
     override val primaryKey = PrimaryKey(id)
 }

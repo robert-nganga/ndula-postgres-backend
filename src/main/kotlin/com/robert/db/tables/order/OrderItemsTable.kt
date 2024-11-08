@@ -10,6 +10,7 @@ object OrderItemsTable : Table() {
     val shoeId = reference("shoe_id", ShoesTable.id)
     val variantId = reference("variant_id", ShoeVariationsTable.id)
     val quantity = integer("quantity")
+    val rating = decimal("rating", 10, 2).nullable().default(null)
     val price = decimal("price", 10, 2)
 
     override val primaryKey = PrimaryKey(id)

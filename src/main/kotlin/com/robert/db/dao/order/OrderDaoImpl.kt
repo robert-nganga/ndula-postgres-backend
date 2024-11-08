@@ -145,7 +145,8 @@ class OrderDaoImpl: OrderDao{
                     shoe = shoe,
                     variantId = itemRow[OrderItemsTable.variantId],
                     quantity = itemRow[OrderItemsTable.quantity],
-                    price = itemRow[OrderItemsTable.price].toDouble()
+                    price = itemRow[OrderItemsTable.price].toDouble(),
+                    rating = itemRow[OrderItemsTable.rating]?.toDouble()
                 )
             }
 
@@ -220,6 +221,8 @@ class OrderDaoImpl: OrderDao{
                 .map { it[CategoriesTable.name] }
                 .single(),
             createdAt = row[ShoesTable.createdAt].toString(),
+            averageRating = row[ShoesTable.averageRating].toDouble(),
+            totalReviews = row[ShoesTable.totalReviews],
             isInWishList = true
         )
     }

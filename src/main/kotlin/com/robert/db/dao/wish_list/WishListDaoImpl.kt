@@ -217,6 +217,8 @@ class WishListDaoImpl : WishListDao {
                 .map { it[CategoriesTable.name] }
                 .single(),
             createdAt = row[ShoesTable.createdAt].toString(),
+            averageRating = row[ShoesTable.averageRating].toDouble(),
+            totalReviews = row[ShoesTable.totalReviews],
             isInWishList = true
         )
     }
