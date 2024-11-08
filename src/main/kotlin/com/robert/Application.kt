@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
-@Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
+@Suppress("unused")
 fun Application.module() = runBlocking {
 
     val geoContext = GeoApiContext.Builder()
@@ -51,8 +51,8 @@ fun Application.module() = runBlocking {
     val tokenConfig = TokenConfig(
         issuer = environment.config.property("jwt.issuer").getString(),
         audience = environment.config.property("jwt.audience").getString(),
-        expiresIn = 7L * 1000L * 60L * 60L * 24L,
-        secret = "my-secret"
+        expiresIn = 7L * 4L * 60L * 60L * 24L,
+        secret = System.getenv("SECRET")
     )
     val tokenService = JwtTokenService()
     val hashingService = SHA256HashingService()
