@@ -7,6 +7,7 @@ import com.robert.db.dao.brand.BrandDaoImpl
 import com.robert.db.dao.cart.CartDaoImpl
 import com.robert.db.dao.category.CategoryDaoImpl
 import com.robert.db.dao.order.OrderDaoImpl
+import com.robert.db.dao.review.ReviewDaoImpl
 import com.robert.db.dao.shoe.ShoeDaoImpl
 import com.robert.db.dao.user.UserDaoImpl
 import com.robert.db.dao.wish_list.WishListDaoImpl
@@ -18,6 +19,7 @@ import com.robert.plugins.configureSerialization
 import com.robert.repositories.cart.CartRepositoryImpl
 import com.robert.repositories.images.ImageRepositoryImpl
 import com.robert.repositories.order.OrderRepositoryImpl
+import com.robert.repositories.reviews.ReviewRepositoryImpl
 import com.robert.repositories.shoe.BrandRepositoryImpl
 import com.robert.repositories.shoe.CategoryRepositoryImpl
 import com.robert.repositories.shoe.ShoeRepositoryImpl
@@ -55,7 +57,9 @@ fun Application.module() = runBlocking {
     val tokenService = JwtTokenService()
     val hashingService = SHA256HashingService()
     val categoryDao = CategoryDaoImpl()
-    val wishListDao= WishListDaoImpl()
+    val wishListDao = WishListDaoImpl()
+    val reviewDao = ReviewDaoImpl()
+    val reviewRepository = ReviewRepositoryImpl(reviewDao)
     val shoeDao = ShoeDaoImpl(wishListDao = wishListDao)
     val brandDao = BrandDaoImpl(shoeDao = shoeDao)
     val cartDao = CartDaoImpl(shoeDao = shoeDao)
@@ -85,6 +89,7 @@ fun Application.module() = runBlocking {
         orderRepository = OrderRepositoryImpl(orderDao = orderDao),
         imageRepository = imageRepository,
         wishListRepository = WishListRepositoryImpl(wishListDao),
+        reviewRepository = reviewRepository,
         locationService = locationService
     )
 }

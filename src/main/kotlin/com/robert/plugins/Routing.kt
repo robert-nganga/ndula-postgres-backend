@@ -1,8 +1,10 @@
 package com.robert.plugins
 
+import com.robert.location_services.LocationService
 import com.robert.repositories.cart.CartRepository
 import com.robert.repositories.images.ImageRepository
 import com.robert.repositories.order.OrderRepository
+import com.robert.repositories.reviews.ReviewRepository
 import com.robert.repositories.shoe.BrandRepository
 import com.robert.repositories.shoe.CategoryRepository
 import com.robert.repositories.shoe.ShoeRepository
@@ -26,7 +28,9 @@ fun Application.configureRouting(
     cartRepository: CartRepository,
     orderRepository: OrderRepository,
     imageRepository: ImageRepository,
-    wishListRepository: WishListRepository
+    wishListRepository: WishListRepository,
+    reviewRepository: ReviewRepository,
+    locationService: LocationService
 ) {
     routing {
         get("/") {
@@ -43,6 +47,10 @@ fun Application.configureRouting(
                 hashingService = hashingService,
                 userRepository = userRepository
             )
+        }
+
+        route("/location"){
+            locationRoutes(locationService)
         }
 
         authenticate {
@@ -66,6 +74,9 @@ fun Application.configureRouting(
             }
             route("/wishlist"){
                 wishlistRoutes(wishListRepository)
+            }
+            route("/reviews"){
+                reviewRoutes(reviewRepository)
             }
         }
     }
